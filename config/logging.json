@@ -1,0 +1,62 @@
+{
+    "appenders": {
+        "console": {
+            "type": "stdout"
+        },
+        "error": {
+            "type": "stderr"
+        },
+        "file": {
+            "type": "dateFile",
+            "filename": "logs/digist.log",
+            "pattern": ".yyyy-MM-dd.log"
+        },
+        "mail": {
+            "type": "smtp",
+            "transport": "SMTP",
+            "SMTP": {
+                "host": "smtp.***.com",
+                "secure": false,
+                "port": 25,
+                "auth": {
+                    "user": "service@***.com",
+                    "pass": "1D3xj292343"
+                }
+            },
+            "recipients": "recipient@***.com",
+            "sender": "service@***.com",
+            "subject": "digist-错误日志",
+            "sendInterval": 3600
+        }
+    },
+    "categories": {
+        "debug": {
+            "appenders": [
+                "console"
+            ],
+            "level": "DEBUG"
+        },
+        "default": {
+            "appenders": [
+                "error",
+                "file"
+            ],
+            "level": "INFO"
+        },
+        "apis": {
+            "appenders": [
+                "error",
+                "file"
+            ],
+            "level": "INFO"
+        },
+        "oops": {
+            "appenders": [
+                "error",
+                "file",
+                "mail"
+            ],
+            "level": "ERROR"
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "global": {
+        "space": {
+            "port": 9910,
+            "systemName": "DigiST"
+        },
+        "mysql": {
+            "username": "digist",
+            "password": "pMi+v9+5Qg2vyqrI",
+            "database": "digist",
+            "host": "127.0.0.1",
+            "port": 33306,
+            "dialect": "mysql",
+            "timezone": "+08:00",
+            "logging": false
+        },
+        "redis": {
+            "host": "127.0.0.1",
+            "port": 6379,
+            "auth_pass": "23Zut32nfne4MU339PEDE"
+        }
+    }
+}
