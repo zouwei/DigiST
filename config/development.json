@@ -1,7 +1,7 @@
 {
     "global": {
         "space": {
-            "port": 9910,
+            "port": 9980,
             "systemName": "DigiST"
         },
         "mysql": {

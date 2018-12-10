@@ -1,10 +1,11 @@
-var app = require("../routes");
-var http = require("http");
-var { logger, log4js } = require("../common/logger");
+const app = require("../routes");
+const http = require("http");
+const port = require('config').get('global.space.port')
+const { logger, log4js } = require("../common/logger");
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
-var closeLog4js = (reason) => {
+const closeLog4js = (reason) => {
     log4js.shutdown(() => {
         console.log("app server shutdown: %s", reason);
         process.exit(1);
@@ -38,4 +39,4 @@ server.on("listening", function () {
     logger.info("app started: Listening on %s:%s", addr.address, addr.port);
 });
 
-server.listen(9106, "0.0.0.0");
+server.listen(port, "0.0.0.0");

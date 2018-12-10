@@ -1,5 +1,9 @@
 {
     "global": {
+        "space": {
+            "port": 9980,
+            "systemName": "DigiST"
+        },
         "mysql": {
             "username": "digist",
             "password": "pMi+v9+5Qg2vyqrI",
