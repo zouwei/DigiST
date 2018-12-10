@@ -1,9 +1,12 @@
-const {} = require("../models");
+const { DstFundraising } = require("./dst_fundraising.service");
+const { DstInvest } = require("./dst_invest.service");
+const { DstProjectFollow } = require("./dst_project_follow.service");
+const { DstProjectLog } = require("./dst_project_log.service");
+const { DstUserInfo } = require("./dst_user_info.service");
 
-const {APIClient} = require("./client.service");
+module.exports = { DstFundraising, DstInvest, DstProjectFollow, DstProjectLog, DstUserInfo };
 
 
-module.exports = { };
 
 /*
 
@@ -29,12 +32,12 @@ client (需要单独开发，提供出去，分前后端两种？)
 */
 
 class Client {
-    constructor (app_id, auth) {
+    constructor(app_id, auth) {
         this.app_id = app_id;
         this.auth = auth;
     }
 
-    static identity (req) {
+    static identity(req) {
     }
 }
 
@@ -47,27 +50,27 @@ class HostManager {
      * }
      */
 
-    constructor (host_list) {
+    constructor(host_list) {
         this.host_list = host_list;
     }
 
-    static getHost () {
+    static getHost() {
 
     }
 }
 
 class ProxyConfig {
-    constructor (url_pattern, hosts, url) {
+    constructor(url_pattern, hosts, url) {
         this.url_pattern = url_pattern;
         this.hosts = hosts;
         this.url = url;
     }
 
-    loadConfig () {
+    loadConfig() {
 
     }
 
-    matchConfig () {
+    matchConfig() {
         // 匹配的效率问题（线性排序是可以的）
 
     }
