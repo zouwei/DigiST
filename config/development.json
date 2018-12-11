@@ -18,6 +18,18 @@
             "host": "127.0.0.1",
             "port": 6379,
             "auth_pass": "23Zut32nfne4MU339PEDE"
-        }
+        },
+        "sms": {
+            "host": "http://127.0.0.1/",
+            "user": "smsuser",
+            "password": "kkie98387kj"
+          },
+          "email": {
+            "secureConnection": true,
+            "port": 465,
+            "host": "smtp.exmail.qq.com",
+            "user": "service@domain.com",
+            "password": "dieKKIekdiekdiekd93k"
+          }
     }
 }

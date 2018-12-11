@@ -12,15 +12,6 @@ var app = express();
 // app.use(bodyParser.text());
 // app.use(bodyParser.urlencoded({extended: false}));
 
-// const {testPost, ping, testGetWithqs} = require("../handlers/index");
-// app.get("/test", testGetWithqs);
-// app.post("/test", testPost);
-// app.get("/", ping);
-
-app.use("/apis/", require("./apis"));
-app.use("/configs/", require("./configs"));
-app.use("/perms/", require("./permissions"));
-app.use("/clients/", require("./clients"));
-app.use("/tokens/", require("./tokens"));
+app.use("/ws_service/user", require("./user"));
 
 module.exports = exports = app;

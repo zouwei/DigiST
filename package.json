@@ -16,16 +16,17 @@
   "author": "joe",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "1.18.2",
+    "config": "^3.0.0",
     "express": "^4.16.2",
+    "fs": "0.0.1-security",
     "log4js": "^2.5.2",
     "mysql2": "^1.5.1",
-    "redis": "^2.8.0",
-    "config": "^3.0.0",
-    "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "sequelize": "^4.41.2",
-    "body-parser": "1.18.2",
+    "path-to-regexp": "2.1.0",
+    "redis": "^2.8.0",
     "request": "2.83.0",
-    "path-to-regexp": "2.1.0"
+    "sequelize": "^4.41.2",
+    "svg-captcha": "^1.3.12"
   }
 }
