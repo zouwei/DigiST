@@ -71,7 +71,7 @@ module.exports.userRegister = (req, res) => {
     // 参数验证
     let body = req.body;
     // 验证参数
-    if (!body.phones || body.phones == "") {
+    if (!body.mobile || body.mobile == "") {
         return res.status(200).json(ResultCode.returnResult('1', "请输入正确的手机号", configSpace.systemName, '请求失败'));
     }
     if (!body.verifyCode || body.verifyCode == "") {
