@@ -1,3 +1,3 @@
-const { DstProjectLog } = require("../models");
+const { ProjectLog } = require("../models");
 
-module.exports.DstProjectLog = DstProjectLog;
+module.exports.ProjectLog = ProjectLog;

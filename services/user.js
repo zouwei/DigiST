@@ -3,8 +3,10 @@ const { sms_requester } = require('../common/sms_sdk');
 const { RedisCache } = require('../common/redis.class');
 const { CharacterHelper } = require("../common/characterHelper");
 const idgen = require('../common/generateid');
+// 加密模块
+const { RSASecurity } = require('../common/security');
 // ORM对象模块
-const { DstUserInfo } = require("../modelservices");
+const { UserInfo } = require("../modelservices");
 
 // 用户密码采用RAS加密，暂时写死
 const PASSWORDCERTCONFIG = {
@@ -54,7 +56,7 @@ class User {
         // });
 
 
-        return Promise.resolve(svgCaptcha);
+        return Promise.resolve(svgcaptcha);
 
     };
 
@@ -144,7 +146,7 @@ class User {
      *    "verifyCode":"1234",          //手机验证码
      * }
      */
-    userRegister(args) {
+    static userRegister(args) {
         // 验证码验证
         let verifyCode = (verifyCode, mobile) => {
 
@@ -164,12 +166,12 @@ class User {
         };
 
         // 用户注册流程
-        return verifyCode(p.verifyCode, p.telephone).then(() => {
+        return verifyCode(args.verifyCode, args.mobile).then(() => {
             // 手机号码验证通过，注册（要先验证手机号码是否存在）
             let user_info = {
                 id: idgen.getID("ID"),
-                mobile: args.phones,
-                password: "",            // 无密码
+                mobile: args.mobile,
+                password: RSASecurity.encrypt(args.password || CharacterHelper.randomString(12), PASSWORDCERTCONFIG.public_key, "base64"),            // 随机密码
                 pay_password: "",
                 name: "",
                 remark: "",
@@ -179,8 +181,9 @@ class User {
                 update_id: "",
                 valid: 1,
             }
+            
             // 写入数据库
-            return DstUserInfo.insert(user_info);
+            return UserInfo.create(user_info);
         }).then(data => {
             // 新增完成
             return Promise.resolve(data);
@@ -201,9 +204,9 @@ class User {
      * }
      */
     retrievePassword(args) {
-
+        return Promise.resolve('ok');
     }
 
 }
 
-module.exports = { User }
+module.exports = { User };

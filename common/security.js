@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const NodeRSA = require('node-rsa');
 
 /**
  * 通用方法
@@ -63,7 +64,7 @@ class RSASecurity {
      * @returns {string|Buffer}
      */
     static encrypt(src_data, public_key, encoding) {
-        let _public = '-----BEGIN PUBLIC KEY-----\n' + insert_str(public_key, '\n', 64) + '-----END PUBLIC KEY-----';
+        let _public = '-----BEGIN PUBLIC KEY-----\n' + SecurityCommon.certFormat(public_key, '\n', 64) + '-----END PUBLIC KEY-----';
         let _NodeRSA = new NodeRSA(_public, { encryptionScheme: "pkcs1" });
         return _NodeRSA.encrypt(src_data, encoding ? encoding : 'base64');
     };
@@ -76,7 +77,7 @@ class RSASecurity {
      * @returns {Buffer|Object|string}
      */
     static decrypt(cryptograph, private_key, encoding) {
-        let _private = '-----BEGIN PRIVATE KEY-----\n' + insert_str(private_key, "\n", 64) + '-----END PRIVATE KEY-----';
+        let _private = '-----BEGIN PRIVATE KEY-----\n' + SecurityCommon.certFormat(private_key, "\n", 64) + '-----END PRIVATE KEY-----';
         let _NodeRSA = new NodeRSA(_private, { encryptionScheme: "pkcs1" });
         return _NodeRSA.decrypt(cryptograph, encoding ? encoding : 'utf-8');
     };

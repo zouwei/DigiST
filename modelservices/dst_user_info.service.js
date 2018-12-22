@@ -1,3 +1,3 @@
-const { DstUserInfo } = require("../models");
+const { UserInfo } = require("../models");
 
-module.exports.DstUserInfo = DstUserInfo;
+module.exports.UserInfo = UserInfo;

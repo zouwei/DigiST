@@ -1,3 +1,3 @@
-const { DstProjectFollow } = require("../models");
+const { ProjectFollow } = require("../models");
 
-module.exports.DstProjectFollow = DstProjectFollow;
+module.exports.ProjectFollow = ProjectFollow;

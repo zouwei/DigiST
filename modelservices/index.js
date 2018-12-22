@@ -1,10 +1,10 @@
-const { DstFundraising } = require("./dst_fundraising.service");
-const { DstInvest } = require("./dst_invest.service");
-const { DstProjectFollow } = require("./dst_project_follow.service");
-const { DstProjectLog } = require("./dst_project_log.service");
-const { DstUserInfo } = require("./dst_user_info.service");
+const { Fundraising } = require("./dst_fundraising.service");
+const { Invest } = require("./dst_invest.service");
+const { ProjectFollow } = require("./dst_project_follow.service");
+const { ProjectLog } = require("./dst_project_log.service");
+const { UserInfo } = require("./dst_user_info.service");
 
-module.exports = { DstFundraising, DstInvest, DstProjectFollow, DstProjectLog, DstUserInfo };
+module.exports = { Fundraising, Invest, ProjectFollow, ProjectLog, UserInfo };
 
 
 

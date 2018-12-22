@@ -1,3 +1,3 @@
-const { DstFundraising } = require("../models");
+const { Fundraising } = require("../models");
 
-module.exports.DstFundraising = DstFundraising;
+module.exports.Fundraising = Fundraising;

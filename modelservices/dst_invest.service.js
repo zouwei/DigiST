@@ -1,3 +1,3 @@
-const { DstInvest } = require("../models");
+const { Invest } = require("../models");
 
-module.exports.DstInvest = DstInvest;
+module.exports.Invest = Invest;
