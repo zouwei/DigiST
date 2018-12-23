@@ -8,7 +8,7 @@ const { RSASecurity } = require('../common/security');
 // ORM对象模块
 const { UserInfo } = require("../modelservices");
 
-// 用户密码采用RAS加密，暂时写死
+// 用户密码采用RAS加密，暂时写死(发布版本需要迁移到配置环境中)
 const PASSWORDCERTCONFIG = {
     "public_key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArtnXQm0EU+ZVOqia01+o4zDAkPCCa81nxQ/IypxmjrjRjdeZ+/BMfEI4GX3ElKEasbRh8k0fKHGb9zI6soDFtYTN6fa/kaYK/1ci+a88cOe5yTI3H4D2ETygu8Pm/S2nFzdH8GiUyt/0uvF6uCDOZUkN8FzGwYSfH4K/Cdi6YMfOS2HLMiVwZVA9/5LF5CpPRWeCg0mnnOvoPkr7Xx8Aahmdo+265lpXTb2vhz/Fm1HhKhZwfRsU8og9vllVoKTZds5TkPHGQMnkBk/6axikQbhMswAVcqpVXw1lxm396ernYMO+5xqzwQnt1tKxisYMWgOsEvsJo6QWZeB1S2M4UQIDAQAB",
     "private_key": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCu2ddCbQRT5lU6qJrTX6jjMMCQ8IJrzWfFD8jKnGaOuNGN15n78Ex8QjgZfcSUoRqxtGHyTR8ocZv3MjqygMW1hM3p9r+Rpgr/VyL5rzxw57nJMjcfgPYRPKC7w+b9LacXN0fwaJTK3/S68Xq4IM5lSQ3wXMbBhJ8fgr8J2Lpgx85LYcsyJXBlUD3/ksXkKk9FZ4KDSaec6+g+SvtfHwBqGZ2j7brmWldNva+HP8WbUeEqFnB9GxTyiD2+WVWgpNl2zlOQ8cZAyeQGT/prGKRBuEyzABVyqlVfDWXGbf3p6udgw77nGrPBCe3W0rGKxgxaA6wS+wmjpBZl4HVLYzhRAgMBAAECggEBAJBLbf1/ggbLGqLh6YNuei2jWgdCtB7K0EwsDoRGNcyqcSUhPA5R7IzPCQTgaY5OtXzZY8tWIdR6jT+e0Bnnc0Gta1EdNFK6OHEoM9Dh8HssgIGtUxhIkMkAw5SwwrtFJZNfJ5sac1BJKensxl2VlT643yvxJIUnMToL6CP0Gzspy7fE8jGvmmhJV4w0TtSz5ATwKH8TBI1BMc44U+DpIpHgYrcu2YEq6Ax4H2jDqZ1l6W1m4+q1nXEfNf/IgTuF6vRCqk7zN8HcNPc3kiScSuYcHY+qdQRY4cp4/oaHOfIaswxjjCMjqhNzeJxIgVZmCC8QntweAb5M2dLgCnawgAECgYEA1iB7crniW1P0Nvg16TN+l6sJkM29rmOvJP4uyr/zk5Nxf7Rot/t98XTFLnghs2H0TLBtl/zmQFraDhzXaxQca4typMKh9Zt88lkKwOpOL8Ocx5zs/HCairb8JsuoEBZz8PjNHO12XiRDSFuJZbh+Lv4OmD0+0TglSzbjkZsralECgYEA0QslKF2/IlwSgmk/6tQjqFayoIHI7BnzcApZCETB34+y5/7/8YR3cEhpnQ65aM1QchhgrxEUDkn0jBGtOzSg78FMlKatPTSSE2tI2nmVpt0BxZf/Czro98JaUxuws8ncwzbWbKBydTKbwwAGHMbd5olpsuRPWAmT7EL94vS5bgECgYB5hCWKjgLvYU2OhH3Twe1tlRrwmlGyzc9vZvCXDyfj8CDRIEjtYEOw61uba4F0k3pYqycGwfbJPsXQjH2Tvu4B+jktV2ciQwM9ZVq88Ds+z/wBLAUxnZWWcxHV0m2l85gIgKmmaPxroJiuT4RBvdmeQX921gr4IKzJanTrBOw2gQKBgHI6yN85+wvnjCW/JbJIogOG/K1Avm5l7+S1gtlF2Ts05upnKazsWef9adjtBtwB9YejUpHXn0H/n6Y6spK7u4XH9vTz746Wf4wk//aCoghAlItI95FHa66XgYwQgYp9MClsedd6BZGNShhQlwZ6lR84z411vPW6ph5grSOr3vgBAoGBALPWPaWMYxjJI/4+PmYn0VxzzbMOfRukXU6SsVd84/62BcCqhnV23n2aRrwIh4I7GIeS52LniLEYAUzpzWAvQbflnqfxtp+M9z1PBI2AXvIv65XqlysCk0yp10AcYIvONKmmc9G3RzOjJvlVYknn7XukmHvMGd8fWl59E3Kob89P"
@@ -66,10 +66,28 @@ class User {
      * @param {JSON} args 
      * {
      *      "mobile":"" ,                   // 手机号码
-     *      "graphVerifyCode":""            // 图形验证码，如果用图形验证码，必传 captcha
+     *      "graphVerifyCode":"",           // 图形验证码，如果用图形验证码，必传 captcha
+     *      "verifyUser":true               // 【可选参数】验证用户：ture表示用户存在才发送短信，false表示用户不存在再发送短信；参数不存在则表示不验证用户
      * }
      */
     static sendVerificationCode(args) {
+
+        // 验证用户
+        let verifyUser = (verifyUser, mobile) => {
+            if (args.hasOwnProperty('verifyUser')) {
+                // 验证用户再发送短信
+                return UserInfo.findOne({ where: { mobile: args.mobile } }).then(userInfo => {
+                    if (args.verifyUser) {
+
+                    }
+                }).catch(ex => {
+                    return Promise.resolve(new Error(ex.message));
+                });
+            } else {
+                return Promise.resolve(true);       // 不验证用户直接发送短信
+            }
+
+        }
 
         // 图形验证码验证
         let verifyGraphCode = (graphVerifyCode) => {
@@ -143,6 +161,7 @@ class User {
      * @param {JSON} args 
      * {
      *    "mobile":"",                  //手机号码
+     *    "password":"",                  // 登录密码
      *    "verifyCode":"1234",          //手机验证码
      * }
      */
@@ -171,9 +190,9 @@ class User {
             let user_info = {
                 id: idgen.getID("ID"),
                 mobile: args.mobile,
-                password: RSASecurity.encrypt(args.password || CharacterHelper.randomString(12), PASSWORDCERTCONFIG.public_key, "base64"),            // 随机密码
+                password: args.password ? RSASecurity.encrypt(args.password, PASSWORDCERTCONFIG.public_key, "base64") : "",            // 随机密码
                 pay_password: "",
-                name: "",
+                name: args.mobile.substr(0, 3) + '****' + args.mobile.substr(7),        // 隐藏了手机号码中间四位
                 remark: "",
                 created_time: new Date(),
                 created_id: "",
@@ -181,17 +200,15 @@ class User {
                 update_id: "",
                 valid: 1,
             }
-            
+
             // 写入数据库
             return UserInfo.create(user_info);
         }).then(data => {
             // 新增完成
-            return Promise.resolve(data);
+            return Promise.resolve({ "user_id": data.id, "name": data.name, "created_time": data.created_time });
         });
 
     }
-
-
 
 
     /**
@@ -203,9 +220,203 @@ class User {
      *   "password":""              // 密码
      * }
      */
-    retrievePassword(args) {
-        return Promise.resolve('ok');
+    static retrievePassword(args) {
+
+        // 验证码验证
+        let verifyCode = (verifyCode, mobile) => {
+
+            // 获取验证码并且进行验证
+            return RedisCache.get("MOBILE:" + mobile).then(data => {
+                if (data == verifyCode) {
+                    // 手机验证通过
+                    return Promise.resolve(true);
+                } else {
+                    return Promise.reject(new Error("验证码不正确"));
+                }
+            }).catch(ex => {
+                console.log('异常错误', ex);
+                return Promise.reject(new Error("检索验证码时出现异常"));
+            });
+
+        };
+
+
+        // 用户注册流程
+        return verifyCode(args.verifyCode, args.mobile).then(() => {
+            // 查询用户
+            return UserInfo.findOne({ where: { mobile: args.mobile } });
+        }).then((userInfo) => {
+            // 手机号码验证通过，注册（要先验证手机号码是否存在） 
+            if (userInfo) {
+                // 验证密码是否正确
+                let password = RSASecurity.encrypt(args.password, PASSWORDCERTCONFIG.public_key, "base64");
+                // 修改用户信息
+                return UserInfo.update({
+                    "password": password
+                }, {
+                        "where": {
+                            "mobile": args.mobile
+                        }
+                    }).then((data) => {
+                        // 返回信息
+                        return Promise.resolve({
+                            "user_id": userInfo.id,
+                            "name": userInfo.name,
+                            "mobile": userInfo.mobile
+                        });
+                    });
+            } else {
+                return Promise.reject(new Error(`登录用户不存在`));
+            }
+        });
+
+
+
+
+
+
+
     }
+
+    /**
+     * 用户登录
+     * @param {JSON} args 
+     * {
+     *      "mobile":"88888888888",         // 登录手机号码
+     *      "password":""
+     * }
+     */
+    static userLogin(args) {
+        // 根据用户名&密码查询记录
+        return UserInfo.findOne({ where: { mobile: args.mobile } }).then(userInfo => {
+            if (userInfo) {
+                // 验证密码是否正确
+                let password = RSASecurity.decrypt(userInfo.password, PASSWORDCERTCONFIG.private_key);
+                if (args.password !== password) {
+                    return Promise.reject(new Error(`登录密码不正确`));
+                } else {
+                    return Promise.resolve({
+                        "user_id": userInfo.id,
+                        "name": userInfo.name,
+                        "mobile": userInfo.mobile,
+                        "isSetPassword": userInfo.password == "" ? false : true,
+                        "isSetPayPassword": userInfo.pay_password == "" ? false : true,
+                    });
+                }
+            } else {
+                return Promise.reject(new Error(`登录用户不存在`));
+            }
+        });
+
+
+    }
+
+
+
+    // 修改登录密码（首次密码设置）
+
+    /**
+     * 修改密码
+     * @param {JSON} args 
+     * {
+     *   "user_id":"",                   // 用户id
+     *   "old_password":"12345678",      // 手机验证码
+     *   "new_password":"12345678"       // 密码
+     * }
+     */
+    static changePassword(args) {
+        // 修改密码
+        return UserInfo.findOne({ where: { id: args.user_id } }).then((userInfo) => {
+            // 手机号码验证通过，注册（要先验证手机号码是否存在） 
+            if (userInfo) {
+
+                // 检查是否为第一次设置密码（第一次设置密码可以不用传值旧密码）
+                if (userInfo.password !== "") {
+                    // 直接修改密码 
+                    // 需要验证密码是否正确
+                    let password = RSASecurity.decrypt(userInfo.password, PASSWORDCERTCONFIG.private_key);
+                    if (args.old_password !== password) {
+                        // 旧密码不正确
+                        return Promise.reject(new Error("旧密码不正确"));
+                    }
+                }
+
+                // 新密码加密
+                let new_password = RSASecurity.encrypt(args.new_password, PASSWORDCERTCONFIG.public_key, "base64");
+
+                // 修改用户密码信息
+                return UserInfo.update({
+                    "password": new_password
+                }, {
+                        "where": { "id": args.user_id }
+                    }).then((data) => {
+                        // 返回信息
+                        return Promise.resolve({
+                            "user_id": userInfo.id,
+                            "name": userInfo.name,
+                            "mobile": userInfo.mobile,
+                            "isSetPassword": true,
+                            "isSetPayPassword": userInfo.pay_password == "" ? false : true,
+                        });
+                    });
+            } else {
+                return Promise.reject(new Error(`用户不存在`));
+            }
+        });
+    }
+
+    /**
+     *  修改支付密码（首次设置直接设置支付密码）
+     * @param {JSON} args 
+     * {
+     *   "user_id":"",                       // 用户id
+     *   "old_pay_password":"12345678",      // 手机验证码
+     *   "new_pay_password":"12345678"       // 密码
+     * }
+     */
+    static changePayPassword(args) {
+        // 修改密码
+        return UserInfo.findOne({ where: { id: args.user_id } }).then((userInfo) => {
+            // 手机号码验证通过，注册（要先验证手机号码是否存在） 
+            if (userInfo) {
+
+                // 检查是否为第一次设置密码（第一次设置密码可以不用传值旧密码）
+                if (userInfo.pay_password !== "") {
+                    // 直接修改密码 
+                    // 需要验证密码是否正确
+                    let pay_password = RSASecurity.decrypt(userInfo.pay_password, PASSWORDCERTCONFIG.private_key);
+                    if (args.old_pay_password !== pay_password) {
+                        // 旧密码不正确
+                        return Promise.reject(new Error("旧密码不正确"));
+                    }
+                }
+
+                // 新支付密码加密
+                let new_pay_password = RSASecurity.encrypt(args.new_pay_password, PASSWORDCERTCONFIG.public_key, "base64");
+
+                // 修改用户支付密码
+                return UserInfo.update({
+                    "pay_password": new_pay_password
+                }, {
+                        "where": { "id": args.user_id }
+                    }).then((data) => {
+                        // 返回信息
+                        return Promise.resolve({
+                            "user_id": userInfo.id,
+                            "name": userInfo.name,
+                            "mobile": userInfo.mobile,
+                            "isSetPassword": true,
+                            "isSetPayPassword": true,
+                        });
+                    });
+            } else {
+                return Promise.reject(new Error(`用户不存在`));
+            }
+        });
+    }
+
+
+
 
 }
 
