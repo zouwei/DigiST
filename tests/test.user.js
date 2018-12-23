@@ -49,7 +49,7 @@ suite('User unit  testing', function () {
 
     // 测试找回密码
     test("test retrievePassword()", function () {
-        let mobile = "18888888888";
+        let mobile = "78888888888";
         let verifyCode = "1234";
 
         return RedisCache.set("MOBILE:" + mobile, verifyCode, 20).then(data => {
@@ -69,7 +69,7 @@ suite('User unit  testing', function () {
 
     // 用户登录测试
     test("test userLogin()", function () {
-        let mobile = "18888888888";
+        let mobile = "78888888888";
 
         // 用户登录
         User.userLogin({ "mobile": mobile, "password": "12345678" }).then(data => {
@@ -99,7 +99,7 @@ suite('User unit  testing', function () {
         // 修改密码
         return User.changePayPassword({
             "user_id": "49440100583A36F61E5C0000",           //用户id
-            "old_pay_password": "123456781",                 // 登录密码
+            "old_pay_password": "12345678",                 // 登录密码
             "new_pay_password": "12345678",                  //手机验证码
         }).then(data => {
             // 修改密码结果 
