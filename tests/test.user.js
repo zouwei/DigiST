@@ -35,12 +35,12 @@ suite('User unit  testing', function () {
         }).then(data => {
             // 进行注册
             return User.userRegister({
-                "mobile": mobile,                       //手机号码
+                "mobile": mobile,                       // 手机号码
                 "password": "12345678",                 // 登录密码
-                "verifyCode": verifyCode,               //手机验证码
+                "verifyCode": verifyCode,               // 手机验证码
             });
         }).then(data => {
-            // 注册结果 
+            // 注册结果  
             assert.isObject(data, "测试用户注册，成功");
         }).catch(ex => {
             console.log(ex);
@@ -101,7 +101,7 @@ suite('User unit  testing', function () {
             "user_id": "49440100583A36F61E5C0000",           //用户id
             "old_pay_password": "12345678",                 // 登录密码
             "new_pay_password": "12345678",                  //手机验证码
-        }).then(data => {
+        }).then(data => {console.log(data)
             // 修改密码结果 
             assert.isObject(data, "测试修改支付密码，成功");
         }).catch(ex => {
@@ -110,3 +110,4 @@ suite('User unit  testing', function () {
     })
 
 });
+

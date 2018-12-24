@@ -161,7 +161,7 @@ class User {
      * @param {JSON} args 
      * {
      *    "mobile":"",                  //手机号码
-     *    "password":"",                  // 登录密码
+     *    "password":"",                // 登录密码
      *    "verifyCode":"1234",          //手机验证码
      * }
      */
