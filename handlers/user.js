@@ -3,7 +3,7 @@
  */
 const config = require('config')
 const configSpace = config.get('global.space')
-const { User } = require('../services/user')
+const { UserService } = require('../services/user')
 
 /**
  * 图形验证码
@@ -20,7 +20,7 @@ module.exports.getCaptcha = (req, res) => {
     // }
 
     // 发送短信验证码
-    return User.getCaptcha(p).then((svgcaptcha) => {
+    return UserService.getCaptcha(p).then((svgcaptcha) => {
         // session缓存方案
         req.session.captcha = svgcaptcha.text;
         // 输出给前端
@@ -54,7 +54,7 @@ module.exports.sendVerificationCode = (req, res) => {
     body.captcha = req.session.captcha;     // 图形验证码的key值
 
     // 发送短信验证码
-    return User.sendVerificationCode(body).then(data => {
+    return UserService.sendVerificationCode(body).then(data => {
         // 短信验证码发送成功
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
@@ -80,7 +80,7 @@ module.exports.userRegister = (req, res) => {
 
 
     // 用户注册
-    return User.userRegister(body).then(data => {
+    return UserService.userRegister(body).then(data => {
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
         return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));
@@ -112,7 +112,7 @@ module.exports.retrievePassword = (req, res) => {
     }
 
     // 用户注册
-    return User.retrievePassword(body).then(data => {
+    return UserService.retrievePassword(body).then(data => {
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
         return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));
@@ -140,7 +140,7 @@ module.exports.userLogin = (req, res) => {
     }
 
     // 用户注册
-    return User.userLogin(body).then(data => {
+    return UserService.userLogin(body).then(data => {
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
         return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));
@@ -169,7 +169,7 @@ module.exports.changePassword = (req, res) => {
     }
 
     // 用户注册
-    return User.changePassword(body).then(data => {
+    return UserService.changePassword(body).then(data => {
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
         return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));
@@ -197,7 +197,7 @@ module.exports.changePayPassword = (req, res) => {
     }
 
     // 用户注册
-    return User.changePayPassword(body).then(data => {
+    return UserService.changePayPassword(body).then(data => {
         return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
     }).catch(ex => {
         return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));

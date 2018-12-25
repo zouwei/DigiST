@@ -1,7 +1,7 @@
 const { expect, assert } = require("chai");
 const { suite, test, setup, teardown } = require("mocha");
 const { RedisCache } = require('../common/redis.class');
-const { User } = require("../services/user");
+const { UserService } = require("../services/user");
 const { UserInfo, Sequelize } = require("../modelservices");
 
 suite('User unit  testing', function () {
@@ -9,7 +9,7 @@ suite('User unit  testing', function () {
     // 测试验证码生成
     test("test getCaptcha()", function () {
         // 测试验证码生成
-        User.getCaptcha().then(data => {
+        UserService.getCaptcha().then(data => {
             // 验证码输出4位字符串，表示测试通过
             assert.lengthOf(data.text, 4);
         });
@@ -34,7 +34,7 @@ suite('User unit  testing', function () {
             return RedisCache.set("MOBILE:" + mobile, verifyCode, 20);
         }).then(data => {
             // 进行注册
-            return User.userRegister({
+            return UserService.userRegister({
                 "mobile": mobile,                       // 手机号码
                 "password": "12345678",                 // 登录密码
                 "verifyCode": verifyCode,               // 手机验证码
@@ -54,7 +54,7 @@ suite('User unit  testing', function () {
 
         return RedisCache.set("MOBILE:" + mobile, verifyCode, 20).then(data => {
             // 进行注册
-            return User.retrievePassword({
+            return UserService.retrievePassword({
                 "mobile": mobile,                       //手机号码
                 "password": "12345678",                 // 登录密码
                 "verifyCode": verifyCode,               //手机验证码
@@ -72,7 +72,7 @@ suite('User unit  testing', function () {
         let mobile = "78888888888";
 
         // 用户登录
-        User.userLogin({ "mobile": mobile, "password": "12345678" }).then(data => {
+        UserService.userLogin({ "mobile": mobile, "password": "12345678" }).then(data => {
             assert.isObject(data, "登录验证成功")
         }).catch(ex => {
             assert.isObject(null, ex.message);
@@ -82,7 +82,7 @@ suite('User unit  testing', function () {
     // 测试修改登录密码
     test("test changePassword()", function () {
         // 修改密码
-        return User.changePassword({
+        return UserService.changePassword({
             "user_id": "49440100583A36F61E5C0000",       //用户id
             "old_password": "12345678",                  // 登录密码
             "new_password": "12345678",                  //手机验证码
@@ -97,7 +97,7 @@ suite('User unit  testing', function () {
     // 测试修改支付密码
     test("test changePayPassword()", function () {
         // 修改密码
-        return User.changePayPassword({
+        return UserService.changePayPassword({
             "user_id": "49440100583A36F61E5C0000",           //用户id
             "old_pay_password": "12345678",                 // 登录密码
             "new_pay_password": "12345678",                  //手机验证码

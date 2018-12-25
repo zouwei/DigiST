@@ -20,7 +20,7 @@ const PASSWORDCERTCONFIG = {
 /**
  * 用户模块
  */
-class User {
+class UserService {
 
 
 
@@ -193,6 +193,15 @@ class User {
                 password: args.password ? RSASecurity.encrypt(args.password, PASSWORDCERTCONFIG.public_key, "base64") : "",            // 随机密码
                 pay_password: "",
                 name: args.mobile.substr(0, 3) + '****' + args.mobile.substr(7),        // 隐藏了手机号码中间四位
+                is_mobile_auth: 1,      //是否手机认证:1表示已认证、0表示未认证
+                email: "",        // 邮箱
+                is_email_auth: 0, //是否邮箱认证：1表示已认证、0表示未认证
+                idcard: "",   // 身份证
+                is_idcard_auth: 0,    // 是否身份证认证:1表示已认证、0表示未认证
+                second_auth_info: "{}",       // 第二级认证信息
+                is_second_auth: 0,    // '是否第二级认证信息：1表示已认证、0表示未认证',
+                third_auth_info: "{}",        // 第三级认证信息
+                is_third_auth: 0,     // 是否第三级认证：1表示已认证、0表示未认证
                 remark: "",
                 created_time: new Date(),
                 created_id: "",
@@ -205,7 +214,16 @@ class User {
             return UserInfo.create(user_info);
         }).then(data => {
             // 新增完成
-            return Promise.resolve({ "user_id": data.id, "name": data.name, "created_time": data.created_time });
+            return Promise.resolve({
+                "user_id": data.id,
+                "name": data.name,
+                "is_mobile_auth": data.is_mobile_auth,
+                "is_email_auth": data.is_email_auth,
+                "is_idcard_auth": data.is_idcard_auth,
+                "is_second_auth": data.is_second_auth,
+                "is_third_auth": data.is_third_auth,
+                "created_time": data.created_time
+            });
         });
 
     }
@@ -262,7 +280,12 @@ class User {
                         return Promise.resolve({
                             "user_id": userInfo.id,
                             "name": userInfo.name,
-                            "mobile": userInfo.mobile
+                            "mobile": userInfo.mobile,
+                            "is_mobile_auth": userInfo.is_mobile_auth,
+                            "is_email_auth": userInfo.is_email_auth,
+                            "is_idcard_auth": userInfo.is_idcard_auth,
+                            "is_second_auth": userInfo.is_second_auth,
+                            "is_third_auth": userInfo.is_third_auth
                         });
                     });
             } else {
@@ -301,6 +324,11 @@ class User {
                         "mobile": userInfo.mobile,
                         "isSetPassword": userInfo.password == "" ? false : true,
                         "isSetPayPassword": userInfo.pay_password == "" ? false : true,
+                        "is_mobile_auth": userInfo.is_mobile_auth,
+                        "is_email_auth": userInfo.is_email_auth,
+                        "is_idcard_auth": userInfo.is_idcard_auth,
+                        "is_second_auth": userInfo.is_second_auth,
+                        "is_third_auth": userInfo.is_third_auth
                     });
                 }
             } else {
@@ -357,6 +385,11 @@ class User {
                             "mobile": userInfo.mobile,
                             "isSetPassword": true,
                             "isSetPayPassword": userInfo.pay_password == "" ? false : true,
+                            "is_mobile_auth": userInfo.is_mobile_auth,
+                            "is_email_auth": userInfo.is_email_auth,
+                            "is_idcard_auth": userInfo.is_idcard_auth,
+                            "is_second_auth": userInfo.is_second_auth,
+                            "is_third_auth": userInfo.is_third_auth
                         });
                     });
             } else {
@@ -407,6 +440,11 @@ class User {
                             "mobile": userInfo.mobile,
                             "isSetPassword": true,
                             "isSetPayPassword": true,
+                            "is_mobile_auth": userInfo.is_mobile_auth,
+                            "is_email_auth": userInfo.is_email_auth,
+                            "is_idcard_auth": userInfo.is_idcard_auth,
+                            "is_second_auth": userInfo.is_second_auth,
+                            "is_third_auth": userInfo.is_third_auth
                         });
                     });
             } else {
@@ -438,4 +476,4 @@ class User {
 
 }
 
-module.exports = { User };
+module.exports = { UserService };
