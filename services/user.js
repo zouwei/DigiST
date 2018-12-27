@@ -188,7 +188,7 @@ class UserService {
         return verifyCode(args.verifyCode, args.mobile).then(() => {
             // 手机号码验证通过，注册（要先验证手机号码是否存在）
             let user_info = {
-                id: idgen.getID("ID"),
+                id: idgen.getID("DIGIST"),
                 mobile: args.mobile,
                 password: args.password ? RSASecurity.encrypt(args.password, PASSWORDCERTCONFIG.public_key, "base64") : "",            // 随机密码
                 pay_password: "",

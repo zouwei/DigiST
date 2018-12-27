@@ -35,7 +35,7 @@ class FundraisingService {
     static initiateFundraising(args) {
         // 定义
         let entity = {
-            id: idgen.getID("USER"),
+            id: idgen.getID("DIGIST"),
             user_id: args.user_id,                                      // user_id
             company_name: args.company_name,                            // 公司名称
             company_description: args.company_description,              // 公司介绍

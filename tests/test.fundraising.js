@@ -54,10 +54,13 @@ suite('Fundraising unit testing', function () {
     // 募资：募资项目详情信息查询
     test("test getFundraisingDetail()", function () {
         FundraisingService.getFundraisingDetail({ id: "5553010010546D03225C0000" }).then(data => {
-            console.log("查询结果>>>", data);
             assert.isObject(data, "募资列表查询（成功）");
         });
     });
 
+/*
 
+
+
+*/
 });
