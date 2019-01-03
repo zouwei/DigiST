@@ -156,7 +156,16 @@ class ProjectService {
 
     }
 
-    // 查询用户投资的项目(状态查询、)
+    /**
+     * 查询用户投资的项目(状态查询等信息查询)
+     * @param {JSON} args 
+     * {
+     *      "where":{},                                 // 条件查询
+     *      "order":[['created_time', 'DESC']],         // 排序条件，
+     *      "pageIndex":1,                              // 页码从1开始
+     *      "pageSize":10                               // 分页大小
+     * }
+     */
     static getUserInvestmentProject(args) {
         // 默认分页
         args.pageSize = args.pageSize || 10;
@@ -182,7 +191,13 @@ class ProjectService {
     }
 
 
-    // 查询用户投资项目详情
+    /**
+     * 查询用户投资项目详情
+     * @param {JSON} args 
+     * {
+     *      "id":""
+     * }
+     */
     static getUserInvestmentProjectDetail(args) {
         return Invest.findOne({
             where: {

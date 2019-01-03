@@ -95,8 +95,10 @@ class FundraisingService {
      * 募资列表查询（状态查询）
      * @param {JSON} args 
      * {
-     *      "pageIndex":1,          // 页码从1开始
-     *      "pageSize":10           // 分页大小
+     *      "where":{},                                 // 条件查询
+     *      "order":[['created_time', 'DESC']],         // 排序条件，
+     *      "pageIndex":1,                              // 页码从1开始
+     *      "pageSize":10                               // 分页大小
      * }
      */
     static getFundraisingList(args) {
