@@ -30,6 +30,13 @@
             "host": "smtp.exmail.qq.com",
             "user": "service@domain.com",
             "password": "dieKKIekdiekdiekd93k"
+        },
+        "web3": {
+            "givenProvider": ""
+        },
+        "dataEncryption": {
+            "public_key": "",
+            "private_key": ""
         }
     }
 }
