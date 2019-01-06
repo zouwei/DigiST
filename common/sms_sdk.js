@@ -4,7 +4,7 @@
 //
 // const generateid = require('../common/generateid');
 
-const md5 = require('MD5')
+const md5 = require('md5')
 const config = require('config')
 const smsConfig = config.get('global.sms')
 
@@ -105,7 +105,7 @@ class SmsGatewayRequester extends BaseRequester {
           return Promise.resolve('短信发送成功')
         } else {
           console.log('出现异常>>', errmsg[result.result])
-          Promise.reject(new Error(errmsg[result.result] || '未知错误'))
+          return Promise.reject(new Error(errmsg[result.result] || '未知错误'))
         }
       } catch (ex) {
         console.log('异常', ex)
