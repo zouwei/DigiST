@@ -470,6 +470,20 @@ class UserService {
      */
 
 
+    /**
+     * 查询用户钱包
+     * 创建钱包（备份助记词）
+     * 导入钱包（keystore方式、私钥方式）
+     * 转账
+     * 
+     * 
+     * 
+     * 查询交易记录（直接查询数据表）
+     * 
+     * 统计分析
+     */
+
+
 }
 
 module.exports = { UserService };
