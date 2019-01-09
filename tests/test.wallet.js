@@ -2,7 +2,8 @@
 
 const { expect, assert } = require("chai");
 const { suite, test, setup, teardown } = require("mocha");
-const { Wallet } = require('../services/wallet');
+const { WalletWeb3 } = require('../services/wallet.web3');
+
 
 suite('Wallet unit testing', function () {
 
@@ -27,15 +28,34 @@ suite('Wallet unit testing', function () {
 
     });
 
-    // 钱包：创建钱包
-    test("test createWallet()", function () {
+    // // 钱包：创建钱包
+    // test("test createWallet()", function () {
 
-        let p = {};
+    //     // 查询列表
+    //     WalletWeb3.createWallet().then(data => {
+    //         console.log("钱包>>>", JSON.stringify(data));
+    //         assert.isObject(data, "钱包创建成功");
+    //     });
+    // });
+
+
+    // 钱包：根据助记词导入钱包
+    test("test importWallet(by mnemonic)", function () {
+
         // 查询列表
-        Wallet.createWallet(p).then(data => {
+        let derivePath = "m/44'/60'/0'/0/";
+        for (let i = 0; i < 10; i++) {
+            let data = WalletWeb3.importWallet({
+                "derivePath": derivePath + i,           // "m/44'/60'/0'/0/0",
+                "mnemonic": "cradle peanut cost half reform entry guilt soccer invest material element trouble"
+            });
+            console.log("钱包私钥>>>", data);
+            // 解锁账户
+            let account = WalletWeb3.unlockWallet({ privateKey: data });
+            console.log('解锁账户>>', JSON.stringify(account));
 
-            assert.isObject(data, "钱包创建成功");
-        });
+            assert.isString(data, "导入钱包");
+        }
     });
 
 

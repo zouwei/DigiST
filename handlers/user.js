@@ -58,22 +58,20 @@ module.exports.sendVerificationCode = (ctx) => {
 module.exports.userRegister = (ctx) => {
 
     // 参数验证
-    let body = req.body;
+    let body = ctx.body;
 
     // 验证参数
     if (!body.mobile || body.mobile == "") {
-        return res.status(200).json(ResultCode.returnResult('1', "请输入正确的手机号", configSpace.systemName, '请求失败'));
+        return ctx.body = ResultCode.returnResult('1', "请输入正确的手机号", configSpace.systemName, '请求失败');
     }
     if (!body.verifyCode || body.verifyCode == "") {
-        return res.status(200).json(ResultCode.returnResult('1', "请输入正确的手机号验证码", configSpace.systemName, '请求失败'));
+        return ctx.body = ResultCode.returnResult('1', "请输入正确的手机号验证码", configSpace.systemName, '请求失败');
     }
 
-
-    // 用户注册
     return UserService.userRegister(body).then(data => {
-        return res.status(200).json(ResultCode.success(data, configSpace.systemName, '请求成功'));
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
     }).catch(ex => {
-        return res.status(200).json(ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败'));
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
     });
 
 }
@@ -89,7 +87,7 @@ module.exports.userRegister = (ctx) => {
 module.exports.retrievePassword = (ctx) => {
 
     // 参数验证
-    let body = req.body;
+    let body = ctx.body;
     // 验证参数
     if (!body.mobile || body.mobile == "") {
         return ctx.body = ResultCode.returnResult('1', "请输入正确的手机号", configSpace.systemName, '请求失败');
@@ -101,7 +99,6 @@ module.exports.retrievePassword = (ctx) => {
         return ctx.body = ResultCode.returnResult('1', "请输入密码", configSpace.systemName, '请求失败');
     }
 
-    // 用户注册
     return UserService.retrievePassword(body).then(data => {
         return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
     }).catch(ex => {
@@ -120,7 +117,7 @@ module.exports.retrievePassword = (ctx) => {
 module.exports.userLogin = (ctx) => {
 
     // 参数验证
-    let body = req.body;
+    let body = ctx.body;
     // 验证参数
     if (!body.mobile || body.mobile == "") {
         return ctx.body = ResultCode.returnResult('1', "请输入正确的手机号", configSpace.systemName, '请求失败');
@@ -129,7 +126,6 @@ module.exports.userLogin = (ctx) => {
         return ctx.body = ResultCode.returnResult('1', "请输入密码", configSpace.systemName, '请求失败');
     }
 
-    // 用户注册
     return UserService.userLogin(body).then(data => {
         return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
     }).catch(ex => {
@@ -149,7 +145,7 @@ module.exports.userLogin = (ctx) => {
 module.exports.changePassword = (ctx) => {
 
     // 参数验证
-    let body = req.body;
+    let body = ctx.body;
     // 验证参数
     if (!body.user_id || body.user_id == "") {
         return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
@@ -158,7 +154,6 @@ module.exports.changePassword = (ctx) => {
         return ctx.body = ResultCode.returnResult('1', "请输入新密码", configSpace.systemName, '请求失败');
     }
 
-    // 用户注册
     return UserService.changePassword(body).then(data => {
         return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
     }).catch(ex => {
@@ -177,7 +172,7 @@ module.exports.changePassword = (ctx) => {
 module.exports.changePayPassword = (ctx) => {
 
     // 参数验证
-    let body = req.body;
+    let body = ctx.body;
     // 验证参数
     if (!body.user_id || body.user_id == "") {
         return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
@@ -186,7 +181,6 @@ module.exports.changePayPassword = (ctx) => {
         return ctx.body = ResultCode.returnResult('1', "请输入支付密码", configSpace.systemName, '请求失败');
     }
 
-    // 用户注册
     return UserService.changePayPassword(body).then(data => {
         return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
     }).catch(ex => {
@@ -194,6 +188,62 @@ module.exports.changePayPassword = (ctx) => {
     });
 }
 
+/**
+ * 查询用户钱包
+ */
+module.exports.getUserWallet = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.getUserWallet(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
+
+/**
+ * 查询用户钱包（包含TOKEN代币）账户余额
+ */
+module.exports.getUserWalletBalance = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.getUserWalletBalance(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
+
+/**
+ * 创建用户钱包
+ */
+module.exports.createUserWallet = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.createUserWallet(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
 
 
 

@@ -89,7 +89,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                                     |
 | ------ | -------------------------------------- |
 | API    | `/ws_digist/user/sendVerificationCode` |
-| METHOD | post                                   |
+| METHOD | POST                                   |
 
 **入参**
 
@@ -118,7 +118,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                             |
 | ------ | ------------------------------ |
 | API    | `/ws_digist/user/userRegister` |
-| METHOD | post                           |
+| METHOD | POST                           |
 
 **入参**
 
@@ -150,7 +150,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                                 |
 | ------ | ---------------------------------- |
 | API    | `/ws_digist/user/retrievePassword` |
-| METHOD | post                               |
+| METHOD | POST                               |
 
 **入参**
 
@@ -187,7 +187,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                          |
 | ------ | --------------------------- |
 | API    | `/ws_digist/user/userLogin` |
-| METHOD | post                        |
+| METHOD | POST                        |
 
 **入参**
 
@@ -221,7 +221,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                               |
 | ------ | -------------------------------- |
 | API    | `/ws_digist/user/changePassword` |
-| METHOD | post                             |
+| METHOD | POST                             |
 
 **入参**
 
@@ -261,7 +261,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                                  |
 | ------ | ----------------------------------- |
 | API    | `/ws_digist/user/changePayPassword` |
-| METHOD | post                                |
+| METHOD | POST                                |
 
 **入参**
 
@@ -294,14 +294,105 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 ### 3.2钱包API
 
-#### 3.2.1
+#### 3.2.1 查询用户钱包
+
+进入钱包首页之后，首先查询用户钱包信息，如果没有
+
+| 名称   | 值                  |
+| ------ | ------------------- |
+| API    | `/ws_service/user/` |
+| METHOD | POST                |
+
+**入参**
+
+```js
+{
+	"user_id":"49440100583A36F61E5C0000"
+}
+```
+
+**出参**
+
+```js
+// 用户钱包未创建的情况下返回
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": null				// 钱包信息为null表示未创建钱包，接下来进行创建或者导入钱包流程
+}
+
+// 如果用户钱包存在的情况下返回
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100D072CF0E365C0000",
+        "address": "0x8D327aFFcB78F4632056Dfe37c9CC0bff6e7f30F"
+		// 钱包的余额或者其他代币余额查询可以考虑用额外的接口来实现
+    }
+}
+```
+
+
+
+#### 3.2.2 查询用户钱包余额
+
+查询用户钱包（包含TOKEN代币）账户余额，根据3.2.1查询到用户钱包address的情况，再查询此接口，可以采用一定策略及时的更新用户的钱包余额情况，例如在tab卡片切换到钱包的时候执行查询，或者定时查询，或者投资项目之后执行查询。
+
+**暂时空缺，细节有待明确下**
+
+| 名称   | 值                                      |
+| ------ | --------------------------------------- |
+| API    | `/ws_service/user/getUserWalletBalance` |
+| METHOD | POST                                    |
+
+**入参**
+
+```js
+
+```
+
+**出参**
+
+```js
+
+```
+
+
+
+#### 3.2.3 创建用户钱包
+
+
+
+| 名称   | 值                                  |
+| ------ | ----------------------------------- |
+| API    | `/ws_service/user/createUserWallet` |
+| METHOD | POST                                |
+
+**入参**
+
+```js
+
+```
+
+**出参**
+
+```js
+
+```
+
+
+
+#### 3.2.4
 
 
 
 | 名称   | 值                  |
 | ------ | ------------------- |
 | API    | `/ws_service/user/` |
-| METHOD | post                |
+| METHOD | POST                |
 
 **入参**
 
@@ -330,7 +421,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                                           |
 | ------ | -------------------------------------------- |
 | API    | `/ws_digist/fundraising/initiateFundraising` |
-| METHOD | post                                         |
+| METHOD | POST                                         |
 
 **入参**
 
@@ -436,7 +527,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 | 名称   | 值                                          |
 | ------ | ------------------------------------------- |
 | API    | `/ws_digist/fundraising/getFundraisingList` |
-| METHOD | post                                        |
+| METHOD | POST                                        |
 
 **入参**
 

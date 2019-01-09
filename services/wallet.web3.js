@@ -5,7 +5,6 @@
 const { UserInfo } = require("../modelservices");
 const config = require('config')
 const WEB3CONFIG = config.get('global.web3');
-
 let Web3 = require('web3');
 // 助记词
 let bip39 = require('bip39');
@@ -15,7 +14,7 @@ let util = require('ethereumjs-util');
 // "Web3.providers.givenProvider" will be set if in an Ethereum supported browser.
 let web3 = new Web3(Web3.givenProvider || WEB3CONFIG.givenProvider);
 
-class Wallet {
+class WalletWeb3 {
 
     /**
      * 定义需要使用到的业务API
@@ -75,19 +74,21 @@ class Wallet {
      * 导入钱包
      * @param {String} mnemonic 根据助记词导入钱包
      * @param {String} derivePath      m/44'/60'/0'/0/0
+     * 
+     * 
      */
-    static importWallet(mnemonic, derivePath) {
+    static importWallet(args) {
 
         if (args.mnemonic) {
             // 根据助记词导入钱包
             //将助记词转换成为seed
-            let seed = bip39.mnemonicToSeed(mnemonic)
+            let seed = bip39.mnemonicToSeed(args.mnemonic)
             //通过hdkey将seed生成HDWallet
             let hdWallet = hdkey.fromMasterSeed(seed)
             //生成的钱包中在m/44'/60'/0'/0/0路径的第一个账户的eypair。
-            let key = hdWallet.derivePath(derivePath)
+            let key = hdWallet.derivePath(args.derivePath)
             //获取私钥
-            return util.bufferToHex(key._hdkey._privateKey)
+            return util.bufferToHex(key._hdkey._privateKey);
         }
 
     }
@@ -112,11 +113,12 @@ class Wallet {
     static unlockWallet(args) {
         if (args.privateKey && args.privateKey != "") {
             // 【解锁方式一】使用web3通过私钥解锁账号
-            let account = web3.eth.accounts.privateKeyToAccount(privateKey);
-
+            let account = web3.eth.accounts.privateKeyToAccount(args.privateKey);
+            return account;
         } else if (args.keystore && args.keystore != "" && args.password && args.password != "") {
             // 【解锁方式二】keystore + 密码
             let account = web3.eth.accounts.decrypt(args.keystore, args.password);            // keystoreJsonV3
+            return account;
         } else {
             //
 
@@ -502,7 +504,7 @@ class Wallet {
         });
     }
 
-    
+
     /**
      * 转账
      * 注意：以太币和Token代币转账是一样的
@@ -563,4 +565,4 @@ class Wallet {
 
 }
 
-module.exports = { Wallet };
+module.exports = { WalletWeb3 };

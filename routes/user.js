@@ -44,7 +44,12 @@ router.post('/userLogin', userHandler.userLogin);
 router.post('/changePassword', userHandler.changePassword);
 // 修改支付密码
 router.post('/changePayPassword', userHandler.changePayPassword);
-
+// 查询用户钱包
+router.post('/getUserWallet', userHandler.getUserWallet);
+// 查询用户钱包（包含TOKEN代币）账户余额
+router.post('/getUserWalletBalance', userHandler.getUserWalletBalance);
+// 创建用户钱包
+router.post('/createUserWallet', userHandler.createUserWallet);
 
 
 module.exports = exports = router

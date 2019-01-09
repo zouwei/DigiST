@@ -6,9 +6,11 @@ const idgen = require('../common/generateid');
 // 加密模块
 const { RSASecurity } = require('../common/security');
 // ORM对象模块
-const { UserInfo } = require("../modelservices");
+const { UserInfo, Wallet } = require("../modelservices");
 const config = require('config')
 const PASSWORDCERTCONFIG = config.get('global.dataEncryption');
+// web3钱包
+const { WalletWeb3 } = require("./wallet.web3");
 
 // 用户密码采用RAS加密，暂时写死(发布版本需要迁移到配置环境中)
 
@@ -482,6 +484,135 @@ class UserService {
      * 
      * 统计分析
      */
+
+
+
+    /**
+     * 查询用户钱包
+     * @param {JSON} args 
+     */
+    static getUserWallet(args) {
+        // 根据用户id查询用户钱包
+        return Wallet.findOne({ where: { "user_id": args.user_id } }).then((walletInfo) => {
+            // 直接返回钱包信息，如果没有创建则返回为null
+            if (walletInfo)
+                return Promise.resolve({
+                    "id": walletInfo.id,
+                    "address": walletInfo.address
+                });
+            else
+                return Promise.resolve(null)
+            // 如果钱包信息存在，（钱包余额怎么查询呢？）
+        });
+    }
+
+
+    /**
+     * 查询用户钱包（包含代币）余额
+     * @param {JSON} args 
+     */
+    static getUserWalletBalance(args) {
+        // 根据用户id查询用户钱包
+        return Promise.resolve("有待进步一步明确接口定义，稍等")
+    }
+
+    /**
+     * 创建用户钱包
+     * @param {JSON} args 
+     */
+    static createUserWallet(args) {
+
+        // 验证钱包信息，如果用户已经创建过了钱包则不能创建了
+
+        return Wallet.findOne({ where: { "user_id": args.user_id } }).then((walletInfo) => {
+            // 检查钱包是否存在
+            if (walletInfo) {
+                return Promise.reject(new Error("当前不允许创建多钱包账户"));
+            }
+            // 钱包账户
+            let walletAccount;
+            // 创建钱包
+            return WalletWeb3.createWallet().then(data => {
+                walletAccount = data;
+                console.log("钱包>>>", JSON.stringify(data));
+                // 需要对钱包信息加密再创建钱包
+                walletInfo = {
+                    id: idgen.getID("DIGIST"),
+                    user_id: args.user_id,
+                    address: walletAccount.address,
+                    mnemonic: RSASecurity.encrypt(walletAccount.mnemonic, PASSWORDCERTCONFIG.public_key, "base64"),  //助记词（数据加密）',
+                    privateKey: RSASecurity.encrypt(walletAccount.privateKey, PASSWORDCERTCONFIG.public_key, "base64"), //私钥（数据加密）',
+                    keystore: RSASecurity.encrypt(JSON.stringify(walletAccount.keystore), PASSWORDCERTCONFIG.public_key, "base64"), //keystore（数据加密）',
+                    balance: 0,          //余额，仅做数据展示',
+                    remark: "",
+                    created_time: new Date(),
+                    created_id: "",
+                    update_time: new Date(),
+                    update_id: "",
+                    valid: 1,
+                }
+                // 创建钱包
+                return Wallet.create(walletInfo);
+            }).then(data => {
+                // data是钱包账户信息
+                return Promise.resolve({
+                    "id": walletInfo.id,
+                    "address": walletAccount.address,
+                    "mnemonic": walletAccount.mnemonic
+                });
+            })
+        });
+    }
+
+
+    // 导入用户钱包
+    static importWallet(args) {
+        // 验证钱包信息，如果用户已经创建过了钱包则不能创建了
+
+        return Wallet.findOne({ where: { "user_id": args.user_id } }).then((walletInfo) => {
+            // 检查钱包是否存在
+            if (walletInfo) {
+                return Promise.reject(new Error("当前不允许导入多钱包账户"));
+            }
+            // 钱包账户
+            let walletAccount;
+            // 创建钱包
+            return WalletWeb3.importWallet(args).then(data => {
+                walletAccount = data;
+                console.log("钱包>>>", JSON.stringify(data));
+                // 需要对钱包信息加密再创建钱包
+                walletInfo = {
+                    id: idgen.getID("DIGIST"),
+                    user_id: args.user_id,
+                    address: walletAccount.address,
+                    // mnemonic: RSASecurity.encrypt(walletAccount.mnemonic, PASSWORDCERTCONFIG.public_key, "base64"),  //助记词（数据加密）',
+                    // privateKey: RSASecurity.encrypt(walletAccount.privateKey, PASSWORDCERTCONFIG.public_key, "base64"), //私钥（数据加密）',
+                    // keystore: RSASecurity.encrypt(JSON.stringify(walletAccount.keystore), PASSWORDCERTCONFIG.public_key, "base64"), //keystore（数据加密）',
+                    balance: 0,          //余额，仅做数据展示',
+                    remark: "",
+                    created_time: new Date(),
+                    created_id: "",
+                    update_time: new Date(),
+                    update_id: "",
+                    valid: 1,
+                }
+                // 创建钱包
+                return Wallet.create(walletInfo);
+            }).then(data => {
+                // data是钱包账户信息
+                return Promise.resolve({
+                    "id": walletInfo.id,
+                    "address": walletAccount.address,
+                    "mnemonic": walletAccount.mnemonic
+                });
+            })
+        });
+
+    }
+
+
+    // 查询列表
+
 
 
 }
