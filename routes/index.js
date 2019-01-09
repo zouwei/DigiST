@@ -63,7 +63,7 @@ app.use(session({
 //   app.use(router.routes())
 
 app.use(require("./user").routes())
-
+app.use(require("./fundraising").routes())
 
 
 

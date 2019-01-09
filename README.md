@@ -67,10 +67,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 页面图形验证码，主要作用是防止对一些付费接口的流量攻击，发送短信是有成本的，通过引入图形验证码能在一定程度上预防这种流量攻击。
 
-| 名称   | 值                            |
-| ------ | ----------------------------- |
-| API    | `/ws_service/user/getCaptcha` |
-| METHOD | get                           |
+| 名称   | 值                           |
+| ------ | ---------------------------- |
+| API    | `/ws_digist/user/getCaptcha` |
+| METHOD | get                          |
 
 图形验证码接口是一个GET接口，在前端HTML中的img标签直接指向src即可。
 
@@ -86,10 +86,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 发送短信验证码，发送短信验证码接口已经一个通用的接口，在多种需要使用短信验证码的场景中使用这一个接口。
 
-| 名称   | 值                                      |
-| ------ | --------------------------------------- |
-| API    | `/ws_service/user/sendVerificationCode` |
-| METHOD | post                                    |
+| 名称   | 值                                     |
+| ------ | -------------------------------------- |
+| API    | `/ws_digist/user/sendVerificationCode` |
+| METHOD | post                                   |
 
 **入参**
 
@@ -115,10 +115,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 新用户注册
 
-| 名称   | 值                              |
-| ------ | ------------------------------- |
-| API    | `/ws_service/user/userRegister` |
-| METHOD | post                            |
+| 名称   | 值                             |
+| ------ | ------------------------------ |
+| API    | `/ws_digist/user/userRegister` |
+| METHOD | post                           |
 
 **入参**
 
@@ -147,10 +147,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 根据手机号码找回密码
 
-| 名称   | 值                                  |
-| ------ | ----------------------------------- |
-| API    | `/ws_service/user/retrievePassword` |
-| METHOD | post                                |
+| 名称   | 值                                 |
+| ------ | ---------------------------------- |
+| API    | `/ws_digist/user/retrievePassword` |
+| METHOD | post                               |
 
 **入参**
 
@@ -184,10 +184,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 用户登录，根据手机号码登录，暂时没开发邮箱登录，其他登录方式使用同一个API，传入不同的值即可。
 
-| 名称   | 值                           |
-| ------ | ---------------------------- |
-| API    | `/ws_service/user/userLogin` |
-| METHOD | post                         |
+| 名称   | 值                          |
+| ------ | --------------------------- |
+| API    | `/ws_digist/user/userLogin` |
+| METHOD | post                        |
 
 **入参**
 
@@ -218,10 +218,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 如果是已经设置过了登录密码，则需要输入旧密码验证通过之后才能修改成功。
 
-| 名称   | 值                                |
-| ------ | --------------------------------- |
-| API    | `/ws_service/user/changePassword` |
-| METHOD | post                              |
+| 名称   | 值                               |
+| ------ | -------------------------------- |
+| API    | `/ws_digist/user/changePassword` |
+| METHOD | post                             |
 
 **入参**
 
@@ -258,10 +258,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 如果是已经设置过了支付密码，则需要输入旧密码验证通过之后才能修改成功。
 
-| 名称   | 值                                   |
-| ------ | ------------------------------------ |
-| API    | `/ws_service/user/changePayPassword` |
-| METHOD | post                                 |
+| 名称   | 值                                  |
+| ------ | ----------------------------------- |
+| API    | `/ws_digist/user/changePayPassword` |
+| METHOD | post                                |
 
 **入参**
 
@@ -327,10 +327,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 发起项目募资，接口数据不完整的话进一步补充字段
 
-| 名称   | 值                                            |
-| ------ | --------------------------------------------- |
-| API    | `/ws_service/fundraising/initiateFundraising` |
-| METHOD | post                                          |
+| 名称   | 值                                           |
+| ------ | -------------------------------------------- |
+| API    | `/ws_digist/fundraising/initiateFundraising` |
+| METHOD | post                                         |
 
 **入参**
 
@@ -356,34 +356,96 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 **出参**
 
 ```js
-// 返回成功
 {
     "code": "0",
     "msg": "请求成功",
     "module": "DigiST",
     "result": {
-        	"id":"",				// id是必须返回的字段
-        	// 返回参数待定
+        "id": "44490100D454720E345C0000",
+        "company_name": "霸得蛮有限公司",
+        "company_description": "这是一家善于搞事情的公司",
+        "corporate": "老王",
+        "company_contact": "18888888888",
+        "company_emergency_contact": "1899999999",
+        "pledged_stock": 20,
+        "project_name": "活着就是搞事情",
+        "project_description": "这是个很牛的项目，轻轻松进账几分钱。",
+        "project_file": "dee123454612353245134523423",
+        "project_val": -1,
+        "currency": "CNY",
+        "project_token": "MANA/TRUE",
+        "project_scale": -1,
+        "project_mode": "项目收益权",
+        "minimum_subscription": 1000,
+        "investment_period": "3Y",
+        "equity_income": 10,
+        "exit_early": "无",
+        "project_status": "new",
+        "follow": 0,
+        "vote_target": 0,
+        "subscribed_quantity": 0,
+        "subscribed_frequency": 0,
+        "vote": 0,
+        "remark": "",
+        "created_time": "2019-01-08T02:44:01.722Z",
+        "update_time": "2019-01-08T02:44:01.722Z",
+        "valid": 1
     }
 }
 ```
 
 
 
-#### 3.3.2 募资列表查询
+#### 3.3.2 一键发币
+
+发币流程是在募资项目资质审核通过之后，（如果需要投票的话，还需要在投票达标之后）才能触发的功能，由项目发起人触发一键发币
+
+此接口涉及到创建智能合约的过程，具体参数待补充
+
+| 名称   | 值                                     |
+| ------ | -------------------------------------- |
+| API    | `/ws_service/fundraising/publishToken` |
+| METHOD | POST                                   |
+
+**入参**
+
+```js
+// 待补充
+```
+
+**出参**
+
+```js
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        // 待补充
+        
+    }
+}
+```
+
+
+
+#### 3.3.3 募资列表查询
 
 募资列表查询（状态查询）,不同的状态查询指定查询参数即可
 
-| 名称   | 值                                           |
-| ------ | -------------------------------------------- |
-| API    | `/ws_service/fundraising/getFundraisingList` |
-| METHOD | post                                         |
+| 名称   | 值                                          |
+| ------ | ------------------------------------------- |
+| API    | `/ws_digist/fundraising/getFundraisingList` |
+| METHOD | post                                        |
 
 **入参**
 
 ```js
 // 入参是一个动态参数结构
 {
+  pageSize:2,			// 每页记录数，默认是10,
+  pageIndex:1,			// 分页索引，从1开始
+  // 查询where条件，多种条件组合请参考`4.查询条件模型`
   where: {
       // "project_status": "closed"
       "project_status": {
@@ -401,28 +463,98 @@ services：业务逻辑层，业务逻辑代码写在这一层。
     "msg": "请求成功",
     "module": "DigiST",
     "result": {
-        
+        "recordsTotal": 17,
+        "data": [
+            {
+                "id": "55530100A85F92F3225C0000",
+                "user_id": "49440100583A36F61E5C0000",
+                "company_name": "霸得蛮有限公司",
+                "company_description": "这是一家善于搞事情的公司",
+                "corporate": "老王",
+                "company_contact": "18888888888",
+                "company_emergency_contact": "1899999999",
+                "pledged_stock": 20,
+                "project_name": "活着就是搞事情",
+                "project_description": "这是个很牛的项目，轻轻松进账几分钱。",
+                "project_file": "dee123454612353245134523423",
+                "project_val": -1,
+                "currency": "CNY",
+                "project_token": "MANA/TRUE",
+                "project_scale": -1,
+                "project_mode": "项目收益权",
+                "minimum_subscription": 1000,
+                "investment_period": "3Y",
+                "equity_income": 10,
+                "exit_early": "无",
+                "project_status": "new",
+                "follow": 0,
+                "vote_target": 0,
+                "subscribed_quantity": 0,
+                "subscribed_frequency": 0,
+                "vote": 0,
+                "remark": "",
+                "created_time": "2018-12-26T03:20:49.000Z",
+                "created_id": "49440100583A36F61E5C0000",
+                "update_time": "2018-12-26T03:20:49.000Z",
+                "update_id": "49440100583A36F61E5C0000",
+                "valid": 1
+            },
+            {
+                "id": "55530100E41E9A05225C0000",
+                "user_id": "49440100583A36F61E5C0000",
+                "company_name": "霸得蛮有限公司",
+                "company_description": "这是一家善于搞事情的公司",
+                "corporate": "老王",
+                "company_contact": "18888888888",
+                "company_emergency_contact": "1899999999",
+                "pledged_stock": 20,
+                "project_name": "活着就是搞事情",
+                "project_description": "这是个很牛的项目，轻轻松进账几分钱。",
+                "project_file": "dee123454612353245134523423",
+                "project_val": -1,
+                "currency": "CNY",
+                "project_token": "MANA/TRUE",
+                "project_scale": -1,
+                "project_mode": "项目收益权",
+                "minimum_subscription": 1000,
+                "investment_period": "3Y",
+                "equity_income": 10,
+                "exit_early": "无",
+                "project_status": "new",
+                "follow": 0,
+                "vote_target": 0,
+                "subscribed_quantity": 0,
+                "subscribed_frequency": 0,
+                "vote": 0,
+                "remark": "",
+                "created_time": "2018-12-25T10:25:29.000Z",
+                "created_id": "49440100583A36F61E5C0000",
+                "update_time": "2018-12-25T10:25:29.000Z",
+                "update_id": "49440100583A36F61E5C0000",
+                "valid": 1
+            }
+        ]
     }
 }
 ```
 
 
 
-#### 3.3.3 募资项目详情信息查询
+#### 3.3.4 募资项目详情信息查询
 
+单条数据详情查询，使用GET查询，get请求能浏览器缓存数据
 
-
-| 名称   | 值                                             |
-| ------ | ---------------------------------------------- |
-| API    | `/ws_service/fundraising/getFundraisingDetail` |
-| METHOD | post                                           |
+| 名称   | 值                                                |
+| ------ | ------------------------------------------------- |
+| API    | `/ws_digist/fundraising/getFundraisingDetail/:id` |
+| METHOD | GET                                               |
 
 **入参**
 
 ```js
-{
-    "id":""			// 募资项目id
-}
+// url最后一位带参
+// 例如：http://localhost:9980/ws_digist/fundraising/getFundraisingDetail/5553010010546D03225C0000
+最后的`5553010010546D03225C0000`就是参数id
 ```
 
 **出参**
@@ -433,21 +565,38 @@ services：业务逻辑层，业务逻辑代码写在这一层。
     "msg": "请求成功",
     "module": "DigiST",
     "result": {
-        // 信息待补充完整
-      "company_name":"霸得蛮有限公司",                    // 公司名称
-      "project_name":"活着就是搞事情",                    // 项目名称
-      "company_description":"这是一家善于搞事情的公司",    // 公司介绍
-      "corporate":"老王",                                 // 公司法人名称
-      "company_contact":"18888888888",                     // 公司联系方式
-      "company_emergency_contact":"1899999999",           //公司紧急联系方式
-      "pledged_stock":20,                                 // 质押股票比例（百分比）
-      "project_description":"这是个很牛的项目，轻轻松进账几分钱。",       // 项目简介
-      "project_file":"dee123454612353245134523423",    // 项目文件
-      "project_scale":0,                       // 筹集规模（货币单位：分）
-      "equity_income":10,                      // 股权收益权（单位：百分比） 
-      "project_token":"MANA/TRUE",             // 项目代币
-      "investment_period":"3Y",                // 投资年限:3Y（最后一位表示日期单位：Y、M、D，分别表示年、月、日）
-      "minimum_subscription":1000,             // 最低认购数量
+        "id": "5553010010546D03225C0000",
+        "user_id": "49440100583A36F61E5C0000",
+        "company_name": "霸得蛮有限公司",
+        "company_description": "这是一家善于搞事情的公司",
+        "corporate": "老王",
+        "company_contact": "18888888888",
+        "company_emergency_contact": "1899999999",
+        "pledged_stock": 20,
+        "project_name": "活着就是搞事情",
+        "project_description": "这是个很牛的项目，轻轻松进账几分钱。",
+        "project_file": "dee123454612353245134523423",
+        "project_val": -1,
+        "currency": "CNY",
+        "project_token": "MANA/TRUE",
+        "project_scale": -1,
+        "project_mode": "项目收益权",
+        "minimum_subscription": 1000,
+        "investment_period": "3Y",
+        "equity_income": 10,
+        "exit_early": "无",
+        "project_status": "closed",
+        "follow": 0,
+        "vote_target": 0,
+        "subscribed_quantity": 0,
+        "subscribed_frequency": 0,
+        "vote": 0,
+        "remark": "",
+        "created_time": "2018-12-25T10:16:13.000Z",
+        "created_id": "49440100583A36F61E5C0000",
+        "update_time": "2018-12-25T10:16:13.000Z",
+        "update_id": "49440100583A36F61E5C0000",
+        "valid": 1
     }
 }
 ```
@@ -460,16 +609,14 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 
 
-
-
-####3.
+#### 3.
 
 
 
-| 名称   | 值                         |
-| ------ | -------------------------- |
-| API    | `/ws_service/fundraising/` |
-| METHOD | post                       |
+| 名称   | 值                        |
+| ------ | ------------------------- |
+| API    | `/ws_digist/fundraising/` |
+| METHOD | POST                      |
 
 **入参**
 
@@ -480,14 +627,7 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 **出参**
 
 ```js
-{
-    "code": "0",
-    "msg": "请求成功",
-    "module": "DigiST",
-    "result": {
-        
-    }
-}
+
 ```
 
 

@@ -51,7 +51,7 @@ module.exports.getFundraisingList = (ctx) => {
 // 募资项目详情信息查询
 module.exports.getFundraisingDetail = (ctx) => {
     // 参数
-    let body = ctx.body;     // ctx.body;
+    let body = ctx.params;     // ctx.body;
     console.log("output args>>", body);
     // // 验证参数
     // if (!body.mobile || body.mobile == "") {
