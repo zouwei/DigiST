@@ -6,10 +6,12 @@
 
 
 
-| 版本编号 | 版本日期   | 修改者 | 说明               |
-| -------- | ---------- | ------ | ------------------ |
-| v0.0.2   | 2019-01-07 | 胡邹   | 募资接口文档更新   |
-| v0.0.1   | 2018-12-24 | 胡邹   | 用户相关的接口描述 |
+| 版本编号 | 版本日期   | 修改者 | 说明                           |
+| -------- | ---------- | ------ | ------------------------------ |
+| v0.0.4   | 2019-01-10 | 胡邹   | 增加了钱包接口                 |
+| v0.0.3   | 2019-01-09 | 胡邹   | 新增部分钱包接口和接口规范定义 |
+| v0.0.2   | 2019-01-07 | 胡邹   | 募资接口文档更新               |
+| v0.0.1   | 2018-12-24 | 胡邹   | 用户相关的接口描述             |
 
 
 
@@ -351,20 +353,39 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 **入参**
 
 ```js
-
+/**
+ * 查询用户余额
+ * @param {JSON} args 
+ * {
+ *      "user_id":"",      // 用户id
+ *      "address":"",      // 地址
+ *      "defaultBlock":"", // (可选)如果传递此值，则不会使用web3.eth.defaultBlock设置默认快
+ *      "unit":""          // (可选)余额单位：默认ether
+ * }
+ */
+{ 
+	"user_id":"4449010040510C20375C0000",
+	"address": "0x6d7d4a3c274813A00a4e34B842582021733f1a6C" ,
+	"unit":"ether"
+}
 ```
 
 **出参**
 
 ```js
-
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": "0"
+}
 ```
 
 
 
 #### 3.2.3 创建用户钱包
 
-
+先查询用户钱包，如果钱包不存在，可以创建钱包或者导入钱包
 
 | 名称   | 值                                  |
 | ------ | ----------------------------------- |
@@ -374,18 +395,198 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 **入参**
 
 ```js
-
+{
+	"user_id":"49440100583A36F61E5C0000"
+}
 ```
 
 **出参**
 
 ```js
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100EC2BA504375C0000",
+        "address": "0xAB79E60d600e1746D0a4e82d3E4ad7B952309f06",
+        "mnemonic": "spray trash daring critic give armor baby scale move head frown kingdom"
+    }
+}
+```
+
+
+
+
+
+~~~
+// 测试数据，请忽略
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "444901006C33F824375C0000",
+        "address": "0xEb884D11B524945Bb88d47eC51a8B9971F665cA8",
+        "mnemonic": "flag hidden clutch gun benefit crumble public endless swear spring connect fade"
+    }
+}
+
+
+INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `privateKey`, `keystore`, `balance`, `remark`, `created_time`, `created_id`, `update_time`, `update_id`, `valid`) VALUES ('444901006C33F824375C0000', '49440100583A36F61E5C0000', '0xEb884D11B524945Bb88d47eC51a8B9971F665cA8', 'cp+FJSYMmBOmdq6qvIWacbmqVsFz4xiUNYBhK7FmNNYzYgFYn+uYD5QNvC1gMftyzjA4iMzSK1f1rxKjMEKM5qyNPSHI2s7kQfhMm9m1rvjSpK7n8XDZqE4iJ8soCX88oIKlKiiS/ZH7a6M83ppRSdEnvgpulEFgQ/tm+hy14rFNye9IUCxQplyzQWuGKTU4BRcZf0PdR5BqW36NIXG4RrmCCqsf01hLBGhiDPUe1TcOAHqrtkiqPQDuW54URB6NBdXVOY7b3UBKI4GX0QzFUeaYKkfNYP7NB8BtjLoJqfkMVB3GJNAY6fCntItfDgtUzAUfG1tqiMVZIFeQLsSOlg==', 'ZmVjdivpV1vLNWPUthElK3WgIjUdqpirIezpAAaMkUV6/1kZJYMdijDvQx8pHoCJez912znq9pI/bntPsviz4mzwcWvUT3IHT2lxnC2PSzw/v5DIEv+gON6566WwOM4MkMLA8IvtcAOMt/HPa8+CyPTFtTx9HYmiNyDxOmzSL3HFjdRQhGgqbG/9/jrRQGepMSGEh49mcyS3X8m6TYkeFEVf2BAazoZQviEj2On9425s0T5oMBhgkS9Cq+qZlbiMk2vGC0bYwDah9sSC1i/wITOt+ZeZZ4VYCj65eoGYKuNEobH8aBpwUEyt8TIchiy2RelWQ5bmvHLKqsjg6dBZ1A==', '', 0.00, '', '2019-01-10 18:56:55.000', '', '2019-01-10 18:56:55.000', '', 1);
+
+~~~
+
+
+
+#### 3.2.4 根据助记词导入钱包
+
+
+
+| 名称   | 值                                        |
+| ------ | ----------------------------------------- |
+| API    | `/ws_service/user/importWalletByMnemonic` |
+| METHOD | POST                                      |
+
+**入参**
+
+```js
+{
+	"user_id":"49440100583A36F61E5C0000",
+	"mnemonic":"farm usual marble endorse voice tobacco weird swear color fall search jar"
+}
+```
+
+**出参**
+
+```js
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100EC2B2B06375C0000",
+        "address": "0xEa39b7f1d486E766ffC1fd5A1AAAa74e47065DA1"
+    }
+}
+```
+
+
+
+#### 3.2.5 根据keystore+密码导入钱包
+
+貌似还有点问题
+
+| 名称   | 值                                        |
+| ------ | ----------------------------------------- |
+| API    | `/ws_service/user/importWalletByKeystore` |
+| METHOD | POST                                      |
+
+**入参**
+
+```js
+{
+    "user_id":"49440100583A36F61E5C0000",
+    "password":"12345678",
+    "keystore":{
+        "version":3,
+        "id":"f654d9b2-64da-4dfc-b755-eee214462c0c",
+        "address":"4cceba2d7d2b4fdce4304d3e09a1fea9fbeb1528",
+        "crypto":{
+            "ciphertext":"",
+            "cipherparams":{
+                "iv":"4fb64c6ae444a64be98ae64875122c45"
+            },
+            "cipher":"aes-128-ctr",
+            "kdf":"scrypt",
+            "kdfparams":{
+                "dklen":32,
+                "salt":"39ef475153377ec3ebde90478a31ca2483ddc7aab02807897a6fb4555d6d5b5d",
+                "n":8192,
+                "r":8,
+                "p":1
+            },
+            "mac":"03b2d19cca1e7db19bd1050e48686df09052686a80712ad791e25b0e7adb808a"
+        }
+    }
+}
+```
+
+**出参**
+
+```js
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100EC2B2B06375C0000",
+        "address": "0xEa39b7f1d486E766ffC1fd5A1AAAa74e47065DA1"
+    }
+}
+```
+
+
+
+
+
+
+
+#### 3.2.6 导出keystore
+
+导出keystore（需要根据支付密码设置）
+
+| 名称   | 值                                      |
+| ------ | --------------------------------------- |
+| API    | `/ws_service/user/exportWalletKeystore` |
+| METHOD | POST                                    |
+
+**入参**
+
+```js
+{
+	"user_id":"49440100583A36F61E5C0000",					// 用户id
+	"pay_password":"12345678",								// 支付密码
+	"address":"0xEa39b7f1d486E766ffC1fd5A1AAAa74e47065DA1"	// 钱包地址
+}
+```
+
+**出参**
+
+```js
+// result返回的就是keystoreJsonV3结构文件
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "version": 3,
+        "id": "f654d9b2-64da-4dfc-b755-eee214462c0c",
+        "address": "4cceba2d7d2b4fdce4304d3e09a1fea9fbeb1528",
+        "crypto": {
+            "ciphertext": "",
+            "cipherparams": {
+                "iv": "4fb64c6ae444a64be98ae64875122c45"
+            },
+            "cipher": "aes-128-ctr",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "salt": "39ef475153377ec3ebde90478a31ca2483ddc7aab02807897a6fb4555d6d5b5d",
+                "n": 8192,
+                "r": 8,
+                "p": 1
+            },
+            "mac": "03b2d19cca1e7db19bd1050e48686df09052686a80712ad791e25b0e7adb808a"
+        }
+    }
+}
 
 ```
 
 
 
-#### 3.2.4
+#### 3.2.7 转账
 
 
 
@@ -405,6 +606,33 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 ```js
 
 ```
+
+
+
+#### 3.2.8
+
+
+
+| 名称   | 值                  |
+| ------ | ------------------- |
+| API    | `/ws_service/user/` |
+| METHOD | POST                |
+
+**入参**
+
+```js
+
+```
+
+**出参**
+
+```js
+
+```
+
+
+
+
 
 
 

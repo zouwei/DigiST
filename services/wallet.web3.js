@@ -10,9 +10,11 @@ let Web3 = require('web3');
 let bip39 = require('bip39');
 let hdkey = require('ethereumjs-wallet/hdkey');
 let util = require('ethereumjs-util');
+// 以太坊交易
+var Tx = require('ethereumjs-tx');
 
-// "Web3.providers.givenProvider" will be set if in an Ethereum supported browser.
-let web3 = new Web3(Web3.givenProvider || WEB3CONFIG.givenProvider);
+// "Web3.providers.givenProvider" will be set if in an Ethereum supported browser. Web3.givenProvider || 
+let web3 = new Web3(WEB3CONFIG.givenProvider);
 
 class WalletWeb3 {
 
@@ -46,50 +48,76 @@ class WalletWeb3 {
 
     /**
      * 创建钱包
+     * 创建钱包的方式有多重，我们采用助记词的方式
      * @param {JSON} args 
      */
     static createWallet() {
+
+
+        // console.log('web3>>', web3);
+        // // 创建助记词
+        // let mnemonic = bip39.generateMnemonic();
+        // console.log("mnemonic>>", mnemonic);
+
+        // // 创建账户
+        // let account = web3.eth.accounts.create(mnemonic);
+
+        // let myAccount = {
+        //     "address": account.address,                 // 地址（可公开）
+        //     "mnemonic": mnemonic,                       // 助记词（绝对保密）
+        //     "privateKey": account.privateKey,           // 私钥（绝对保密）
+        //     "keystore": account.encrypt(mnemonic)       // keystore（相对保密）
+        // }
+        // console.log("myAccount>>", JSON.stringify(myAccount));
+
+        // return Promise.resolve(myAccount);
+
+
         console.log('web3>>', web3);
         // 创建助记词
         let mnemonic = bip39.generateMnemonic();
         console.log("mnemonic>>", mnemonic);
 
-        // 创建账户
-        let account = web3.eth.accounts.create(mnemonic);
+        var seed = bip39.mnemonicToSeed(mnemonic)
+        var hdWallet = hdkey.fromMasterSeed(seed)
+        // 默克尔树根
+        var key1 = hdWallet.derivePath("m/44'/60'/0'/0/0")
+        console.log("私钥：" + util.bufferToHex(key1._hdkey._privateKey));
 
+        var address1 = util.pubToAddress(key1._hdkey._publicKey, true)
+        console.log("地址：" + util.bufferToHex(address1))
+
+        address1 = util.toChecksumAddress(address1.toString('hex'))
+        console.log("Encoding Address 地址：" + address1)
+        // 账户
         let myAccount = {
-            "address": account.address,                 // 地址（可公开）
-            "mnemonic": mnemonic,                       // 助记词（绝对保密）
-            "privateKey": account.privateKey,           // 私钥（绝对保密）
-            "keystore": account.encrypt(mnemonic)       // keystore（相对保密）
+            "address": address1,                                            // 地址（可公开）
+            "mnemonic": mnemonic,                          // 助记词（绝对保密）
+            "privateKey": address1,        // 私钥（绝对保密）
+            "keystore": ""                                                  // keystore，未导出，不保存
         }
         console.log("myAccount>>", JSON.stringify(myAccount));
 
         return Promise.resolve(myAccount);
-
     }
 
 
     /**
-     * 导入钱包
+     * 导入钱包助记词获取私钥
      * @param {String} mnemonic 根据助记词导入钱包
      * @param {String} derivePath      m/44'/60'/0'/0/0
-     * 
-     * 
      */
-    static importWallet(args) {
+    static importWalletMnemonic(mnemonic, derivePath) {
 
-        if (args.mnemonic) {
-            // 根据助记词导入钱包
-            //将助记词转换成为seed
-            let seed = bip39.mnemonicToSeed(args.mnemonic)
-            //通过hdkey将seed生成HDWallet
-            let hdWallet = hdkey.fromMasterSeed(seed)
-            //生成的钱包中在m/44'/60'/0'/0/0路径的第一个账户的eypair。
-            let key = hdWallet.derivePath(args.derivePath)
-            //获取私钥
-            return util.bufferToHex(key._hdkey._privateKey);
-        }
+        // 根据助记词导入钱包
+        //将助记词转换成为seed
+        let seed = bip39.mnemonicToSeed(mnemonic)
+        //通过hdkey将seed生成HDWallet
+        let hdWallet = hdkey.fromMasterSeed(seed)
+        //生成的钱包中在m/44'/60'/0'/0/0路径的第一个账户的eypair。
+        let key = hdWallet.derivePath(derivePath)
+        //获取私钥
+        return util.bufferToHex(key._hdkey._privateKey);
 
     }
 
@@ -113,17 +141,24 @@ class WalletWeb3 {
     static unlockWallet(args) {
         if (args.privateKey && args.privateKey != "") {
             // 【解锁方式一】使用web3通过私钥解锁账号
-            let account = web3.eth.accounts.privateKeyToAccount(args.privateKey);
-            return account;
-        } else if (args.keystore && args.keystore != "" && args.password && args.password != "") {
+            return web3.eth.accounts.privateKeyToAccount(args.privateKey);
+        } else { // (args.keystore && args.keystore != "" && args.password && args.password != "") {
             // 【解锁方式二】keystore + 密码
-            let account = web3.eth.accounts.decrypt(args.keystore, args.password);            // keystoreJsonV3
-            return account;
-        } else {
-            //
-
+            return web3.eth.accounts.decrypt(args.keystore, args.password);            // keystoreJsonV3
         }
+    }
 
+    /**
+     * 加密钱包Keystore
+     * @param {*} args 
+     * {
+     *      "privateKey":"",            // 私钥
+     *      "password":""               // 支付密码
+     * }
+     */
+    static encryptWalletKeystore(privateKey, password) {
+        let account = web3.eth.accounts.encrypt(privateKey, password);
+        return account;
     }
 
 
@@ -137,8 +172,9 @@ class WalletWeb3 {
      * }
      */
     static getBalance(args) {
-        // 查询余额
-        return web3.eth.getBalance(args.address, args.defaultBlock).then(number => {
+        // 查询余额 , args.defaultBlock
+        return web3.eth.getBalance(args.address, args.defaultBlock || null).then(number => {
+            console.log('number  ', number)
             // 输出的number单位是wei，需要转换成为ether
             // 可能的单位包含
             // wei : ‘1’
@@ -154,63 +190,70 @@ class WalletWeb3 {
             // tether : ‘1000000000000000000000000000000’
 
             let balance = web3.utils.fromWei(number, args.unit || 'ether');
+            console.log('balance  ', balance)
             // 返回余额
             return Promise.resolve(balance);
         });
     }
 
 
-    /**
-     * 发送签名之后的交易
-     * @param {*} args 
-     */
-    static async sendSignedTransaction(args) {
-        let { fromaddress, toaddress, number, privatekey } = ctx.request.body
+    // /**
+    //  * 发送签名之后的交易
+    //  * @param {*} args 
+    //  * {
+    //  *      "fromaddress":"",               // 发送人地址
+    //  *      "toaddress":"",                 // 接收人地址
+    //  *      "number":0.001,                 // 转账数量
+    //  *      "privatekey":""                 // 私钥 
+    //  * }
+    //  */
+    // static async sendSignedTransaction(args) {
+    //     let { fromaddress, toaddress, number, privatekey } = args;
 
-        let nonce = await web3.eth.getTransactionCount(fromaddress)
-        let gasPrice = await web3.eth.getGasPrice()
-        let balance = await web3.utils.toWei(number)
-        var Tx = require('ethereumjs-tx');
-        var privateKey = new Buffer(privatekey.slice(2), 'hex')
-        var rawTx = {
-            from: fromaddress,
-            nonce: nonce,
-            gasPrice: gasPrice,
-            to: toaddress,
-            value: balance,
-            data: '0x00'//转Token代币会用的一个字段
-        }
-        //需要将交易的数据进行gas预估，然后将gas值设置到参数中
-        let gas = await web3.eth.estimateGas(rawTx)
-        rawTx.gas = gas
+    //     let nonce = await web3.eth.getTransactionCount(fromaddress)
+    //     let gasPrice = await web3.eth.getGasPrice();
+    //     let balance = await web3.utils.toWei(number)
 
-
-        var tx = new Tx(rawTx);
-        tx.sign(privateKey);
-        var serializedTx = tx.serialize();
-        let responseData;
-        await web3.eth.sendSignedTransaction('0x' +
-            serializedTx.toString('hex'), function (err, data) {
-                console.log(err)
-                console.log(data)
+    //     var privateKey = new Buffer(privatekey.slice(2), 'hex')
+    //     var rawTx = {
+    //         from: fromaddress,
+    //         nonce: nonce,
+    //         gasPrice: gasPrice,
+    //         to: toaddress,
+    //         value: balance,
+    //         data: '0x00'//转Token代币会用的一个字段
+    //     }
+    //     //需要将交易的数据进行gas预估，然后将gas值设置到参数中
+    //     let gas = await web3.eth.estimateGas(rawTx)
+    //     rawTx.gas = gas
 
 
-                if (err) {
-                    responseData = fail(err)
-                }
-            })
-            .then(function (data) {
-                console.log(data)
-                if (data) {
-                    responseData = success({
-                        "transactionHash": data.transactionHash
-                    })
-                } else {
-                    responseData = fail("交易失败")
-                }
-            })
-        return Promise.resolve(responseData);
-    }
+    //     var tx = new Tx(rawTx);
+    //     tx.sign(privateKey);
+    //     var serializedTx = tx.serialize();
+    //     let responseData;
+    //     await web3.eth.sendSignedTransaction('0x' +
+    //         serializedTx.toString('hex'), function (err, data) {
+    //             console.log(err)
+    //             console.log(data)
+
+
+    //             if (err) {
+    //                 responseData = fail(err)
+    //             }
+    //         })
+    //         .then(function (data) {
+    //             console.log(data)
+    //             if (data) {
+    //                 responseData = success({
+    //                     "transactionHash": data.transactionHash
+    //                 })
+    //             } else {
+    //                 responseData = fail("交易失败")
+    //             }
+    //         })
+    //     return Promise.resolve(responseData);
+    // }
 
 
     // 获取代币，这个用来测试
@@ -510,53 +553,73 @@ class WalletWeb3 {
      * 注意：以太币和Token代币转账是一样的
      * @param {*} args 
      */
-    static async transfer(args) {
-        // 解构
+    static async sendSignedTransaction(args) {
+        // 参数解构
         let { fromaddress, toaddress, number, privatekey } = args;
+        // 指定地址发出的交易数量
+        let nonce = await web3.eth.getTransactionCount(fromaddress);
+        // 获取当前gas价格，该价格由最近的若干块 的gas价格中值决定
+        let gasPrice = await web3.eth.getGasPrice();
+        // 转账金额转换成为wei
+        let balance = await web3.utils.toWei(number);
 
-        let nonce = await web3.eth.getTransactionCount(fromaddress)
-        let gasPrice = await web3.eth.getGasPrice()
-        let decimals = await myContract.methods.decimals().call()
-        let balance = number * Math.pow(10, decimals)
-        let myBalance = await myContract.methods.balanceOf(fromaddress).call()
-        if (myBalance < balance) {
-            return Promise.reject(new Error("余额不足"));
-        }
-        let tokenData = await myContract.methods.transfer(toaddress,
-            balance).encodeABI()
-        var Tx = require('ethereumjs-tx');
+        // 私钥
         var privateKey = new Buffer(privatekey.slice(2), 'hex')
         var rawTx = {
+            from: fromaddress,
             nonce: nonce,
             gasPrice: gasPrice,
-            to: myContract.options.address, //如果转的是token代币，那么这个to就是合约地址
-            from: fromaddress,
-            data: tokenData                 //转Token代币会用的一个字段
+            to: toaddress,//如果转的是token代币，那么这个to就是合约地址
+            value: balance,
+            data: "0x00" //tokenData                 //转Token代币会用的一个字段
         }
-        // 需要将交易的数据进行gas预估，然后将gas值设置到参数中
-        let gas = await web3.eth.estimateGas(rawTx)
-        rawTx.gas = gas
 
+
+        // 如果是转token代币
+        if (args.token) {
+            let decimals = await myContract.methods.decimals().call();
+            let balance = number * Math.pow(10, decimals);
+            let myBalance = await myContract.methods.balanceOf(fromaddress).call();
+            if (myBalance < balance) {
+                return Promise.reject(new Error("余额不足"));
+            }
+            let tokenData = await myContract.methods.transfer(toaddress, balance).encodeABI();
+            // 转账参数
+            rawTx = {
+                from: fromaddress,
+                nonce: nonce,
+                gasPrice: gasPrice,
+                to: myContract.options.address,         // 那么这个to就是合约地址
+                data: tokenData                         // 指定转token代币
+            }
+        }
+
+        // 需要将交易的数据进行gas预估，然后将gas值设置到参数中
+        let gas = await web3.eth.estimateGas(rawTx);
+        // gas费
+        rawTx.gas = gas;
+        // 交易对象
         var tx = new Tx(rawTx);
+        // 签名
         tx.sign(privateKey);
 
         var serializedTx = tx.serialize();
         let responseData;
         // 发送签名交易
         await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, data) {
-            console.log(err)
-            console.log(data)
+            console.log("err>>", err)
+            console.log("data>>", data)
             if (err) {
                 return Promise.reject(err);
             }
         }).then(data => {
             console.log("转账结果", data)
             if (data) {
-                responseData.transactionHash = data.transactionHash;        // 转账hash值
+                responseData = data;        // 转账hash值
             } else {
                 return Promise.reject(new Error("交易失败"));
             }
-        })
+        });
 
         return Promise.resolve(responseData);
     }

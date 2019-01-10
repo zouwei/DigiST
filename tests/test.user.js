@@ -133,15 +133,15 @@ suite('User unit  testing', function () {
     //     });
     // });
 
-    // 测试：导入用户钱包
-    test("test getUserWallet()", function () {
-        // 修改密码
-        return UserService.getUserWallet({ "user_id": "49440100583A36F61E5C0000" }).then(data => {
-            console.log(data)
-            // 修改密码结果 
-            assert.isObject(data, "查询用户钱包成功");
-        });
-    });
+    // // 测试：导入用户钱包
+    // test("test getUserWallet()", function () {
+    //     // 修改密码
+    //     return UserService.getUserWallet({ "user_id": "49440100583A36F61E5C0000" }).then(data => {
+    //         console.log(data)
+    //         // 修改密码结果 
+    //         assert.isObject(data, "查询用户钱包成功");
+    //     });
+    // });
 
 });
 

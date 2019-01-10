@@ -44,12 +44,23 @@ router.post('/userLogin', userHandler.userLogin);
 router.post('/changePassword', userHandler.changePassword);
 // 修改支付密码
 router.post('/changePayPassword', userHandler.changePayPassword);
+
+// **********************************************************************************
 // 查询用户钱包
 router.post('/getUserWallet', userHandler.getUserWallet);
 // 查询用户钱包（包含TOKEN代币）账户余额
 router.post('/getUserWalletBalance', userHandler.getUserWalletBalance);
 // 创建用户钱包
 router.post('/createUserWallet', userHandler.createUserWallet);
+// 根据助记词导入用户钱包
+router.post('/importWalletByMnemonic', userHandler.importWalletByMnemonic);
+// 根据keystore+密码导入用户钱包
+router.post('/importWalletByKeystore', userHandler.importWalletByKeystore);
+// 导出keystore（需要根据支付密码设置）
+router.post('/exportWalletKeystore', userHandler.exportWalletKeystore);
+
+
+
 
 
 module.exports = exports = router

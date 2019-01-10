@@ -246,4 +246,89 @@ module.exports.createUserWallet = (ctx) => {
 }
 
 
+/**
+ * 根据助记词导入用户钱包
+ * @param {JSON} args 
+ * {
+ *      "user_id":"",               // 用户id
+ *      "mnemonic":""               // 助记词
+ * }
+ */
+module.exports.importWalletByMnemonic = (ctx) => {
 
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.mnemonic || body.mnemonic == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少mnemonic参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.importWalletByMnemonic(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
+
+/**
+  * 根据keystore+密码导入用户钱包
+  * @param {JSON} args 
+  * {
+  *      "user_id":"",                  // 用户id
+  *      "keystore":"",                 // keystore
+  *      "password":""                  // 密码
+  * }
+  */
+module.exports.importWalletByKeystore = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.keystore || body.keystore == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少keystore参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.password || body.password == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少password参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.importWalletByKeystore(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        console.log(ex)
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
+
+/**
+ * 导出keystore（需要根据支付密码设置）
+ * @param {*} args 
+ * {
+ *      "user_id":"",
+ *      "pay_password":"",          // 支付密码
+ * }
+ */
+module.exports.exportWalletKeystore = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.pay_password || body.pay_password == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少pay_password参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.exportWalletKeystore(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        console.log(ex)
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
