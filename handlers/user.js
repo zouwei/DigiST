@@ -332,3 +332,34 @@ module.exports.exportWalletKeystore = (ctx) => {
         return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
     });
 }
+
+
+// 查询用户交易记录列表
+module.exports.getUserTradeList = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.where) {
+        return ctx.body = ResultCode.returnResult('1', "缺少where条件查询参数结构", configSpace.systemName, '请求失败');
+    }
+
+    if (!body.where.user_id || body.where.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少where.user_id参数", configSpace.systemName, '请求失败');
+    }
+
+
+    return UserService.getUserTradeList(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        console.log(ex)
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
+
+
+
+
+
+
+

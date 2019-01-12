@@ -143,5 +143,26 @@ suite('User unit  testing', function () {
     //     });
     // });
 
+    // 测试：转账交易
+    test("test sendSignedTransaction()", function () {
+
+        let args = {
+            user_id: "4449010040510C20375C0000",
+            fromaddress: "0x25090d091a19cabd722f508776ffc2c44119c24b",                // 18816644630
+            toaddress: "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",                  // 88888888888
+            number: "0.0001"                                           // 转账金额，必须是字符串类型的数字格式
+        }
+
+        // 转成交易
+        return UserService.sendSignedTransaction(args).then(data => {
+            console.log("转成交易成功>>", JSON.stringify(data))
+            // 结果 
+            assert.isObject(data, "转成交易成功");
+        }).catch(ex=>{
+            console.log(ex)
+        });
+    });
+
+
 });
 

@@ -8,6 +8,7 @@
 
 | 版本编号 | 版本日期   | 修改者 | 说明                           |
 | -------- | ---------- | ------ | ------------------------------ |
+| v0.0.5   | 2019-01-12 | 胡邹   | 新增转账接口                   |
 | v0.0.4   | 2019-01-10 | 胡邹   | 增加了钱包接口                 |
 | v0.0.3   | 2019-01-09 | 胡邹   | 新增部分钱包接口和接口规范定义 |
 | v0.0.2   | 2019-01-07 | 胡邹   | 募资接口文档更新               |
@@ -51,6 +52,8 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 项目接口遵循一些基本的规则，在使用的过程中，这些基本的规则是全局通用的，例如：host指定为接口访问的域名（包含端口号）。
 
 本项目为例，本地开发环境的host则为：http://localhost:9980，接口API的路由组成完整的API地址：http://localhost:9980/ws_service/user/getCaptcha
+
+测试环境host：
 
 在实际的测试环境中或者生产环境中只需要替换api的域名部分即可。
 
@@ -588,46 +591,128 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 #### 3.2.7 转账
 
+转账分几种情况，以太币转账（如TRUE币转账），此外还有一种智能合约代币（TOKEN）转账，调用的是同一个地址。
 
-
-| 名称   | 值                  |
-| ------ | ------------------- |
-| API    | `/ws_service/user/` |
-| METHOD | POST                |
+| 名称   | 值                                       |
+| ------ | ---------------------------------------- |
+| API    | `/ws_service/user/sendSignedTransaction` |
+| METHOD | POST                                     |
 
 **入参**
 
 ```js
+// 以太币转账
+{
+    user_id:"",													// 用户id
+    toaddress: "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",    // 收款地址
+    number: "0.00001",     		// 转账金额，必须是字符串类型的数字格式
+}
+
+
+// token代币转账（暂缺）
 
 ```
 
 **出参**
 
 ```js
-
+{
+    "code":"0",
+    "msg":"请求成功",
+    "module":"DigiST",
+    "result":{
+        "blockHash":"0x3d2bba33c4bd73d208b632307f97ab5b7904558747f486fe58f6088d34de963c",
+        "blockNumber":956453,
+        "contractAddress":null,
+        "cumulativeGasUsed":21004,
+        "from":"0x25090d091a19cabd722f508776ffc2c44119c24b",
+        "gasUsed":21004,
+        "status":true,
+        "to":"0xa78928eac28219c7d1b1563e9568ada8bfc7677d",
+        "transactionHash":"0xd73aceb8c5fad61ab6cc1f8af855a5075b010560480e971ea8a736e7594e2ed9",
+        "transactionIndex":0
+    }
+}
 ```
 
 
 
-#### 3.2.8
+#### 3.2.8 查询转账交易列表
 
+查询用户的交易记录列表，包含以太币转账记录，token代币转账记录都在这一个表里面。contract_address是合约地址，如果为空表示代币转账。
 
-
-| 名称   | 值                  |
-| ------ | ------------------- |
-| API    | `/ws_service/user/` |
-| METHOD | POST                |
+| 名称   | 值                                 |
+| ------ | ---------------------------------- |
+| API    | `/ws_digist/user/getUserTradeList` |
+| METHOD | POST                               |
 
 **入参**
 
 ```js
-
+{
+    "pageSize":2,
+    "pageIndex":1,
+    "where":{
+		"user_id":"4449010040510C20375C0000"
+    }
+}
 ```
 
 **出参**
 
 ```js
-
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "recordsTotal": 6,
+        "data": [
+            {
+                "id": "44490100984FD93B385C0000",
+                "user_id": "4449010040510C20375C0000",
+                "wallet_id": "44490100BC07DB5C375C0000",
+                "block_hash": "0x9d801f3b67f61c522fbd72af922f43a196d910dcb93a43f90e37949afb4f713e",
+                "block_number": 964625,
+                "contract_address": null,
+                "cumulative_gas_used": "21004",
+                "fromaddress": "0x25090d091a19cabd722f508776ffc2c44119c24b",
+                "gas_used": "21004",
+                "status": "1",
+                "toaddress": "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",
+                "transaction_hash": "0x75dc1d5ebf61ec766eea3c8282fb0c48db169df5f28920096c43d483c55170be",
+                "transaction_index": 0,
+                "remark": "",
+                "created_time": "2019-01-11T06:46:49.000Z",
+                "created_id": "",
+                "update_time": "2019-01-11T06:46:49.000Z",
+                "update_id": "",
+                "valid": 1
+            },
+            {
+                "id": "44490100943B9F3B385C0000",
+                "user_id": "4449010040510C20375C0000",
+                "wallet_id": "44490100BC07DB5C375C0000",
+                "block_hash": "0xb8f35117d931172826171510a3e7f3642c78035e4ad92d4bfdf032e893210360",
+                "block_number": 964615,
+                "contract_address": null,
+                "cumulative_gas_used": "21004",
+                "fromaddress": "0x25090d091a19cabd722f508776ffc2c44119c24b",
+                "gas_used": "21004",
+                "status": "1",
+                "toaddress": "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",
+                "transaction_hash": "0xbe7f43e8d65e42764d7f9316fb6e0d1d6119de3c1d384d75aeeaed9e2c0192b2",
+                "transaction_index": 0,
+                "remark": "",
+                "created_time": "2019-01-11T06:45:51.000Z",
+                "created_id": "",
+                "update_time": "2019-01-11T06:45:51.000Z",
+                "update_id": "",
+                "valid": 1
+            }
+        ]
+    }
+}
 ```
 
 

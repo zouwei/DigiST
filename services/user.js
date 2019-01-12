@@ -6,7 +6,7 @@ const idgen = require('../common/generateid');
 // 加密模块
 const { RSASecurity } = require('../common/security');
 // ORM对象模块
-var { UserInfo, Wallet } = require("../modelservices");
+var { UserInfo, Wallet, Trade } = require("../modelservices");
 const config = require('config')
 const PASSWORDCERTCONFIG = config.get('global.dataEncryption');
 // web3钱包
@@ -517,7 +517,7 @@ class UserService {
         });
     }
 
- 
+
 
     /**
      * 创建用户钱包
@@ -545,7 +545,6 @@ class UserService {
                     address: walletAccount.address,
                     mnemonic: RSASecurity.encrypt(walletAccount.mnemonic, PASSWORDCERTCONFIG.public_key, "base64"),  //助记词（数据加密）',
                     privateKey: RSASecurity.encrypt(walletAccount.privateKey, PASSWORDCERTCONFIG.public_key, "base64"), //私钥（数据加密）',
-                    keystore: "",           //keystore（数据加密）',
                     balance: 0,          //余额，仅做数据展示',
                     remark: "",
                     created_time: new Date(),
@@ -599,7 +598,6 @@ class UserService {
                 address: walletAccount.address,
                 mnemonic: RSASecurity.encrypt(args.mnemonic, PASSWORDCERTCONFIG.public_key, "base64"),  //助记词（数据加密）',
                 privateKey: RSASecurity.encrypt(walletAccount.privateKey, PASSWORDCERTCONFIG.public_key, "base64"), //私钥（数据加密）',
-                keystore: "",               //keystore（数据加密）',
                 balance: 0,                 //余额，仅做数据展示',
                 remark: "",
                 created_time: new Date(),
@@ -657,7 +655,6 @@ class UserService {
                 address: walletAccount.address,
                 mnemonic: "",  //助记词（数据加密）',
                 privateKey: RSASecurity.encrypt(walletAccount.privateKey, PASSWORDCERTCONFIG.public_key, "base64"), //私钥（数据加密）',
-                keystore: "",               //keystore（数据加密）',
                 balance: 0,                 //余额，仅做数据展示',
                 remark: "",
                 created_time: new Date(),
@@ -730,6 +727,122 @@ class UserService {
     }
 
 
+
+
+    /**
+     * 发送交易
+     * @param {JSON} args 
+     * {
+     *      "user_id":"",           // 用户id
+     *      "fromaddress":"",       // 用户钱包地址
+     *      "toaddress":"",         // 转账目标地址
+     *      "number":"0.001"        // 转账金额
+     * }
+     */
+    static sendSignedTransaction(args) {
+
+        // let { fromaddress, toaddress, number } = args;
+        // 验证钱包地址是否属于当前用户
+        let verifyWalletAddress = () => {
+            // 查询钱包信息
+            return Wallet.findOne({ where: { user_id: args.user_id, address: args.fromaddress } }).then(wallet_info => {
+                if (!wallet_info)
+                    return Promise.reject(new Error(`当前钱包地址不属于当前用户`));
+                // 返回钱包信息
+                return Promise.resolve(wallet_info);
+            });
+        };
+
+
+        let wallet_info;
+        // 验证用户钱包
+        return verifyWalletAddress().then(data => {
+            wallet_info = data;
+            // 私钥
+            let privatekey = RSASecurity.decrypt(wallet_info.privateKey, PASSWORDCERTCONFIG.private_key);
+
+            console.log('发送签名交易参数>>', JSON.stringify(args));
+            // web3发送签名交易
+            return WalletWeb3.sendSignedTransaction({
+                "privatekey": privatekey,
+                "fromaddress": args.fromaddress,
+                "toaddress": args.toaddress,
+                "number": args.number
+            });
+        }).then(tx => {
+            // 写入交易记录
+            console.log('交易之后的临时变量>>', JSON.stringify(args));
+
+            let entity = {
+                id: idgen.getID("DIGIST"),
+                user_id: wallet_info.user_id,
+                wallet_id: wallet_info.id,                  // 钱包id 
+                transfer_amount: args.number,               // 转账金额，字符串格式
+                block_hash: tx.blockHash,
+                block_number: tx.blockNumber,
+                contract_address: tx.contractAddress,
+                cumulative_gas_used: tx.cumulativeGasUsed,
+                fromaddress: tx.from,
+                gas_used: tx.gasUsed,
+                status: tx.status,
+                toaddress: tx.to,
+                transaction_hash: tx.transactionHash,
+                transaction_index: tx.transactionIndex,
+                remark: "",
+                created_time: new Date(),
+                created_id: "",
+                update_time: new Date(),
+                update_id: "",
+                valid: 1,
+            }
+            // 创建钱包
+            return Trade.create(entity);
+        }).then(trade_info => {
+            return Promise.resolve({
+                "id": trade_info.id,
+                "transaction_hash": trade_info.transaction_hash
+            });
+        }).catch(ex => {
+            console.log(ex);
+            return Promise.reject(ex);
+        });
+    }
+
+
+    /**
+     * 查询用户交易列表
+     * @param {JSON} args 
+     * {
+     *      "where":{},                                 // 条件查询
+     *      "order":[['created_time', 'DESC']],         // 排序条件，
+     *      "pageIndex":1,                              // 页码从1开始
+     *      "pageSize":10                               // 分页大小
+     * }
+     */
+    static getUserTradeList(args) {
+
+        // 默认分页
+        args.pageSize = args.pageSize || 10;
+        args.pageIndex = args.pageIndex || 1;
+        // 查询条件
+        args.order = args.order || [['created_time', 'DESC']]
+
+        // 查询条件
+        let p = {
+            where: args.where || {},                        //为空，获取全部，也可以自己添加条件
+            offset: (args.pageIndex - 1) * args.pageSize,   //开始的数据索引，比如当page=2 时offset=10 ，而pagesize我们定义为10，则现在为索引为10，也就是从第11条开始返回数据条目
+            order: args.order,                              // 排序
+            limit: args.pageSize                            //每页限制返回的数据条数
+        }
+
+        return Trade.findAndCountAll(p).then(data => {
+            // 返回 
+            return Promise.resolve({
+                "recordsTotal": data.count,
+                "data": data.rows
+            });
+        });
+    }
 
     /**
      * 【ok】查询用户钱包

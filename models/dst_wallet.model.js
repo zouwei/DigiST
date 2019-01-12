@@ -8,7 +8,6 @@ module.exports = exports = function (sequelize, DataTypes) {
         address: {type: DataTypes.STRING(64),"comment": "钱包地址"},
         mnemonic: {type: DataTypes.STRING(512),"comment": "助记词（数据加密）"},
         privateKey: {type: DataTypes.STRING(512),"comment": "私钥（数据加密）"},
-        keystore: {type: DataTypes.STRING(2048),"comment": "keystore（数据加密）"},
         balance: {type: DataTypes.FLOAT(12,2),"comment": "余额，仅做数据展示"},
         remark: {type: DataTypes.STRING(400),"comment": "备注"},
         created_time: {type: DataTypes.DATE,"comment": "创建时间"},

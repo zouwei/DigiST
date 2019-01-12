@@ -92,8 +92,8 @@ class WalletWeb3 {
         // 账户
         let myAccount = {
             "address": address1,                                            // 地址（可公开）
-            "mnemonic": mnemonic,                          // 助记词（绝对保密）
-            "privateKey": address1,        // 私钥（绝对保密）
+            "mnemonic": mnemonic,                                           // 助记词（绝对保密）
+            "privateKey": util.bufferToHex(key1._hdkey._privateKey),        // 私钥（绝对保密）
             "keystore": ""                                                  // keystore，未导出，不保存
         }
         console.log("myAccount>>", JSON.stringify(myAccount));
@@ -563,6 +563,7 @@ class WalletWeb3 {
         // 转账金额转换成为wei
         let balance = await web3.utils.toWei(number);
 
+        console.log('privatekey',privatekey)
         // 私钥
         var privateKey = new Buffer(privatekey.slice(2), 'hex')
         var rawTx = {

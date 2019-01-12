@@ -58,7 +58,8 @@ router.post('/importWalletByMnemonic', userHandler.importWalletByMnemonic);
 router.post('/importWalletByKeystore', userHandler.importWalletByKeystore);
 // 导出keystore（需要根据支付密码设置）
 router.post('/exportWalletKeystore', userHandler.exportWalletKeystore);
-
+// 分页查询用户交易列表
+router.post('/getUserTradeList', userHandler.getUserTradeList);
 
 
 

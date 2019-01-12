@@ -4,8 +4,9 @@ const { ProjectFollow } = require("./dst_project_follow.service");
 const { ProjectLog } = require("./dst_project_log.service");
 const { UserInfo } = require("./dst_user_info.service");
 const { Wallet } = require("./dst_wallet.model.service");
+const { Trade } = require("./dst_trade.model.service");
 
-module.exports = { Fundraising, Invest, ProjectFollow, ProjectLog, UserInfo, Wallet };
+module.exports = { Fundraising, Invest, ProjectFollow, ProjectLog, UserInfo, Wallet,Trade };
 
 
 

@@ -3,7 +3,7 @@
 const { expect, assert } = require("chai");
 const { suite, test, setup, teardown } = require("mocha");
 const { WalletWeb3 } = require('../services/wallet.web3');
-
+const { ConstractsWeb3 } = require('../services/constracts.web3');
 
 suite('Wallet unit testing', function () {
 
@@ -111,20 +111,39 @@ suite('Wallet unit testing', function () {
 
 
 
-    // 钱包：转账
-    test("test sendSignedTransaction()", function () {
-        // 转账参数
-        let args = {
-            fromaddress: "0x25090d091a19cabd722f508776ffc2c44119c24b",                // 18816644630
-            toaddress: "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",                  // 88888888888
-            number: "0.0000001",
-            privatekey: "0xe8999d39004a0642fd467423117407e3502fe0e6969d169b85c9a9750920e4df"
-        }
+    // // 钱包：转账
+    // test("test sendSignedTransaction()", function () {
+    //     // 转账参数
+    //     let args = {
+    //         fromaddress: "0x25090d091a19cabd722f508776ffc2c44119c24b",                // 18816644630
+    //         toaddress: "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",                  // 88888888888
+    //         number: "0.00001",                                  // 转账金额，必须是字符串类型的数字格式
+    //         privatekey: "0xe8999d39004a0642fd467423117407e3502fe0e6969d169b85c9a9750920e4df"
+    //     }
 
-        WalletWeb3.sendSignedTransaction(args).then(balance => {
-            console.log("转账结果>>>", JSON.stringify(balance));
-            assert.isObject(balance, "转账成功");
-        });
+    //     WalletWeb3.sendSignedTransaction(args).then(balance => {
+    //         console.log("转账结果>>>", JSON.stringify(balance));
+    //         assert.isObject(balance, "转账成功");
+    //     });
+    // });
+
+
+
+
+    // 钱包：转账
+    test("test compile()", function () {
+        // 转账参数
+
+
+        ConstractsWeb3.compile({
+            "fromaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B"
+        }).then(data => {
+            // console.log("结果>>>", JSON.stringify(data));
+            assert.isObject(data, "转账成功");
+        }).catch(ex => {
+            console.log("出现错误>>", ex.message);
+
+        })
     });
 
 
