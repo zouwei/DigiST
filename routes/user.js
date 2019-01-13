@@ -60,6 +60,8 @@ router.post('/importWalletByKeystore', userHandler.importWalletByKeystore);
 router.post('/exportWalletKeystore', userHandler.exportWalletKeystore);
 // 分页查询用户交易列表
 router.post('/getUserTradeList', userHandler.getUserTradeList);
+// 发起转账
+router.post('/sendSignedTransaction', userHandler.sendSignedTransaction);
 
 
 

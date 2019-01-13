@@ -13,7 +13,7 @@ class ConstractsWeb3 {
     // 编译合约
 
     /**
-     * 
+     * 创建新合约
      * @param {JSON} args 
      * { 
      *      "fromaddress":"",           // 发起交易地址
@@ -53,74 +53,72 @@ class ConstractsWeb3 {
         //       continue;
         // }
 
-        let gasEstimate = 968355 - 50000;
 
-        //  return Promise.resolve({ "abi": abi, "bytecode": bytecode });
 
         // 创建合约部分
         console.log('gasEstimate start ');
-        // 估算交易的gas用量
-        // let gasEstimate = await web3.eth.estimateGas({ data: '0x' + bytecode });
-        console.log('gasEstimate: ' + gasEstimate);
-        console.log('deploying contract...', args.fromaddress, (gasEstimate + 50000).toString());
 
-        console.log(JSON.stringify({
-            from: args.fromaddress,             // 发布人地址            
-            gas: 30000000000,                        // provide as fallback always 5M gas
-            gasPrice: (gasEstimate + 50000).toString(),      // 用于交易的gas价格（单位：wei）
-            value: 0
-        }));
- 
 
+        console.log('deploying contract...');
+
+        // console.log(JSON.stringify({
+        //     from: args.fromaddress,             // 发布人地址            
+        //     gas: 50000,                        // provide as fallback always 5M gas
+        //     gasPrice: (gasEstimate + 50000).toString(),      // 用于交易的gas价格（单位：wei）
+        //     value: 0
+        // }));
+
+
+
+
+
+        // 需要把钱包
+        let account = web3.eth.accounts.privateKeyToAccount(args.privateKey);
+        web3.eth.accounts.wallet.add(account);
+
+
+        // web3.eth.accounts.wallet.add(args.privateKey);
+        console.log("1111>>>", web3.eth.accounts[0]);
         // 创建合约对象
-        let myContract = new web3.eth.Contract(abi, {
-            data: '0x' + bytecode,
-            from: args.fromaddress,                         // 发布人地址            
-            gas: 30000000000,                               // provide as fallback always 5M gas
-            gasPrice: gasEstimate + 50000
-        });
-
+        let myContract = new web3.eth.Contract(abi);
 
         console.debug("Contract >>");
         console.log("gasPrice>>", myContract.options.gasPrice);
         console.log("from>>", myContract.options.from);
 
- 
+        // 估算交易的gas用量
+        return web3.eth.estimateGas({ data: '0x' + bytecode }).then(gasEstimate => {
 
+            // 部署合约
+            return myContract.deploy({
+                data: '0x' + bytecode,	                    //已0x开头
+                arguments: [1000000000000000, "test contract Aa", "tcaa"]	                            //传递构造函数的参数
+            }).send({
+                from: args.fromaddress,                         // 发布人地址            
+                gas: 3000000,                               // provide as fallback always 5M gas
+                gasPrice: gasEstimate + 50000,          // (gasEstimate + 50000).toString()      // 用于交易的gas价格（单位：wei）
+                value: 0
+            }, function (error, transactionHash) {
+                console.log("send回调");
+                console.log("error:", error);
+                console.log("send transactionHash:" + transactionHash);
+            })
+                .on('error', function (error) { console.error("error>>", error) })
+                .then(function (newContractInstance) {
+                    var newContractAddress = newContractInstance.options.address
+                    console.log("新合约地址:" + newContractAddress);
+                    return Promise.resolve(newContractAddress);
+                }).catch(ex => {
+                    console.log("ex", ex);
+                    return Promise.resolve(ex);
+                });
 
-        // return myContract.balanceOf(args.fromaddress, function (error, balance) {
-        //     console.log("error.>", error);
-        //     console.log("error.>", balance);
-        //     return Promise.resolve({ "balance": balance })
-        // });
-
-        // 部署合约
-        return myContract.deploy({
-            data: '0x' + bytecode,	                    //已0x开头
-            arguments: [1000000000000000, "test contract Aa", "tcaa"]	                            //传递构造函数的参数
-        }).send({
-            from: args.fromaddress,                         // 发布人地址            
-            gas: 30000000000,                               // provide as fallback always 5M gas
-            gasPrice: gasEstimate + 50000// (gasEstimate + 50000).toString()      // 用于交易的gas价格（单位：wei）
-
-        }, function (error, transactionHash) {
-            console.log("send回调");
-            console.log("error:", error);
-            console.log("send transactionHash:" + transactionHash);
-        })
-            .on('error', function (error) { console.error("error>>", error) })
-            .then(function (newContractInstance) {
-                var newContractAddress = newContractInstance.options.address
-                console.log("新合约地址:" + newContractAddress);
-                return Promise.resolve(newContractAddress);
-            }).catch(ex => {
-                console.log("ex", ex);
-                return Promise.resolve(ex);
-            });
-
+        });
 
 
     }
+
+
 
 
 }

@@ -4,9 +4,11 @@ const idgen = require('../common/generateid');
 // 加密模块
 const { RSASecurity } = require('../common/security');
 // ORM对象模块
-const { Fundraising } = require("../modelservices");
-
-
+const { Fundraising, Wallet } = require("../modelservices");
+// web3钱包、智能合约
+const { WalletWeb3 } = require("./wallet.web3");
+const config = require('config')
+const PASSWORDCERTCONFIG = config.get('global.dataEncryption');
 /**
  * 募资模块
  */
@@ -79,14 +81,80 @@ class FundraisingService {
 
 
 
-    // 一键发币
+    /**
+     * 一键发币
+     * @param {JSON} args 
+     * {
+     *      "id":"",                // 项目id
+     *      "user_id":"",           // 用户id
+     *      "address":"",           // 钱包地址
+     * }
+     */
     static publishToken(args) {
         /**
          * 发币分为几个步骤：
+         * 检查发币状态，只有特定允许发币状态的合同能执行发币
          * 1.发布智能合约（上链成功之后写入合约信息）
          * 2.修改募资状态信息
          */
 
+        // 验证募资项目
+        let verifyFundraisingProject = () => {
+            // 查询钱包信息
+            return Fundraising.findOne({ where: { id: args.id } }).then(entity_info => {
+                if (!entity_info)
+                    return Promise.reject(new Error(`未查询到相关募资项目`));
+                if (entity_info.user_id !== args.user_id)
+                    return Promise.reject(new Error(`募资项目不属于当前用户`));
+                // 状态判断
+                if (entity_info.project_status !== "raise")
+                    return Promise.reject(new Error(`当前${entity_info.project_status}状态，不允许执行发币操作`));
+                // 返回项目信息
+                return Promise.resolve(entity_info);
+            });
+        };
+
+        // 验证钱包地址
+        let verifyWalletAddress = () => {
+            // 查询钱包信息
+            return Wallet.findOne({ where: { user_id: args.user_id, address: args.address } }).then(wallet_info => {
+                if (!wallet_info)
+                    return Promise.reject(new Error(`钱包地址不属于当前用户`));
+                // 返回钱包信息
+                return Promise.resolve(wallet_info);
+            });
+        };
+
+        // 执行项目业务逻辑 
+        let wallet_info;
+
+        // 验证钱包
+        return verifyWalletAddress().then(data => {
+            // 钱包账户
+            wallet_info = data;
+            // 验证项目
+            return verifyFundraisingProject();
+        }).then(data => {
+            let entity = {
+                "fromaddress": args.address,
+                "privateKey": RSASecurity.decrypt(wallet_info.privateKey, PASSWORDCERTCONFIG.private_key),
+                "totalSupply": data.project_scale,            // 发行规模
+                "name": data.project_name,                    // 项目名称：
+                "symbol": data.project_token                  // TOKEN代币名称：MANA
+            }
+            // 发布智能合约
+            return WalletWeb3.createContract(entity);
+        }).then(data => {
+            // 修改合约地址
+            return Fundraising.update({
+                "contract_address": data,
+                "project_status": "finished",
+                "created_id": "",
+                "update_id": ""
+            }, { "where": { "id": args.id } });
+        }).then(data => {
+            return Promise.resolve("智能合约发布成功");
+        });
 
     }
 

@@ -589,9 +589,9 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.7 转账
+#### 3.2.7 转账（以太币转账）
 
-转账分几种情况，以太币转账（如TRUE币转账），此外还有一种智能合约代币（TOKEN）转账，调用的是同一个地址。
+转账分几种情况，以太币转账（如TRUE币转账），此外还有一种智能合约代币（TOKEN）转账，此接口是用来代币转账的接口
 
 | 名称   | 值                                       |
 | ------ | ---------------------------------------- |
@@ -603,34 +603,23 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 ```js
 // 以太币转账
 {
-    user_id:"",													// 用户id
-    toaddress: "0xa78928eac28219c7d1b1563e9568ada8bfc7677d",    // 收款地址
-    number: "0.00001",     		// 转账金额，必须是字符串类型的数字格式
+    "user_id":"4449010040510C20375C0000",	
+    "fromaddress":"0x25090d091a19CAbD722F508776ffc2c44119C24B",
+    "toaddress": "0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d",  
+    "number": "1" 
 }
-
-
-// token代币转账（暂缺）
-
 ```
 
 **出参**
 
 ```js
 {
-    "code":"0",
-    "msg":"请求成功",
-    "module":"DigiST",
-    "result":{
-        "blockHash":"0x3d2bba33c4bd73d208b632307f97ab5b7904558747f486fe58f6088d34de963c",
-        "blockNumber":956453,
-        "contractAddress":null,
-        "cumulativeGasUsed":21004,
-        "from":"0x25090d091a19cabd722f508776ffc2c44119c24b",
-        "gasUsed":21004,
-        "status":true,
-        "to":"0xa78928eac28219c7d1b1563e9568ada8bfc7677d",
-        "transactionHash":"0xd73aceb8c5fad61ab6cc1f8af855a5075b010560480e971ea8a736e7594e2ed9",
-        "transactionIndex":0
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100300B61593B5C0000",
+        "transaction_hash": "0x1a2ec75c6f23e82698eee06aaafd8c69067b0a66138a28d933753f667cc41cc3"
     }
 }
 ```
@@ -804,7 +793,7 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 发币流程是在募资项目资质审核通过之后，（如果需要投票的话，还需要在投票达标之后）才能触发的功能，由项目发起人触发一键发币
 
-此接口涉及到创建智能合约的过程，具体参数待补充
+
 
 | 名称   | 值                                     |
 | ------ | -------------------------------------- |
@@ -814,20 +803,32 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 **入参**
 
 ```js
-// 待补充
+// 一键发币，一个项目只能发起一次，根据状态判定
+{
+    "id":"555301000C119D03225C0000",	// 项目id
+    "user_id":"4449010040510C20375C0000",	// 用户id
+    "address":"0x25090d091a19CAbD722F508776ffc2c44119C24B"		// 用户钱包id
+}
 ```
 
 **出参**
 
 ```js
+// 发币成功
 {
     "code": "0",
     "msg": "请求成功",
     "module": "DigiST",
-    "result": {
-        // 待补充
-        
-    }
+    "result": "智能合约发布成功"
+}
+
+
+// 发币失败
+{
+    "code": "1",
+    "msg": "当前finished状态，不允许执行发币操作",
+    "module": "DigiST",
+    "result": "请求失败"
 }
 ```
 
@@ -1125,3 +1126,31 @@ Post.findAll({
 | $contained: [1, 2]             | <@ [1, 2] (PG array contained by operator)                   |
 | $any: [2,3]                    | ANY ARRAY[2, 3]::INTEGER (PG only)                           |
 | $col: 'user.organization_id'   | "user"."organization_id", with dialect specific column identifiers, PG in this example  --$col取表的字段 |
+
+
+
+
+
+
+
+
+
+const contract = new web3.eth.Contract(iterface);
+  contract.options.address = contractAddress;
+  const account = web3.eth.accounts.decrypt(keystore, password);
+  web3.eth.accounts.wallet.add(account);
+  const value_wei = web3.utils.toWei(value, 'ether');
+
+
+  const data = contract.methods.transfer(toAddr, value_wei).encodeABI();
+  web3.eth.sendTransaction({
+​    from: fromAddr,
+​    to: contractAddress,
+​    value: '0x00',
+​    gasPrice,
+​    gas,
+​    data,
+  },
+  (error, txhash) => {
+​    callabck(error, txhash);
+  });

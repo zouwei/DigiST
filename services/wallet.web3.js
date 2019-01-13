@@ -6,15 +6,17 @@ const { UserInfo } = require("../modelservices");
 const config = require('config')
 const WEB3CONFIG = config.get('global.web3');
 let Web3 = require('web3');
+// "Web3.providers.givenProvider" will be set if in an Ethereum supported browser. Web3.givenProvider || 
+let web3 = new Web3(WEB3CONFIG.givenProvider);
+// 以太坊交易
+var Tx = require('ethereumjs-tx');
 // 助记词
 let bip39 = require('bip39');
 let hdkey = require('ethereumjs-wallet/hdkey');
 let util = require('ethereumjs-util');
-// 以太坊交易
-var Tx = require('ethereumjs-tx');
-
-// "Web3.providers.givenProvider" will be set if in an Ethereum supported browser. Web3.givenProvider || 
-let web3 = new Web3(WEB3CONFIG.givenProvider);
+// 智能合约
+const solc = require('solc');
+const fs = require('fs');
 
 class WalletWeb3 {
 
@@ -73,6 +75,8 @@ class WalletWeb3 {
         // return Promise.resolve(myAccount);
 
 
+
+
         console.log('web3>>', web3);
         // 创建助记词
         let mnemonic = bip39.generateMnemonic();
@@ -96,7 +100,13 @@ class WalletWeb3 {
             "privateKey": util.bufferToHex(key1._hdkey._privateKey),        // 私钥（绝对保密）
             "keystore": ""                                                  // keystore，未导出，不保存
         }
+        // 添加进入账户
+        let account = web3.eth.accounts.privateKeyToAccount(myAccount.privateKey);
+        web3.eth.accounts.wallet.add(account);
+
+
         console.log("myAccount>>", JSON.stringify(myAccount));
+
 
         return Promise.resolve(myAccount);
     }
@@ -120,7 +130,6 @@ class WalletWeb3 {
         return util.bufferToHex(key._hdkey._privateKey);
 
     }
-
 
     /**
      * 解锁钱包
@@ -197,357 +206,6 @@ class WalletWeb3 {
     }
 
 
-    // /**
-    //  * 发送签名之后的交易
-    //  * @param {*} args 
-    //  * {
-    //  *      "fromaddress":"",               // 发送人地址
-    //  *      "toaddress":"",                 // 接收人地址
-    //  *      "number":0.001,                 // 转账数量
-    //  *      "privatekey":""                 // 私钥 
-    //  * }
-    //  */
-    // static async sendSignedTransaction(args) {
-    //     let { fromaddress, toaddress, number, privatekey } = args;
-
-    //     let nonce = await web3.eth.getTransactionCount(fromaddress)
-    //     let gasPrice = await web3.eth.getGasPrice();
-    //     let balance = await web3.utils.toWei(number)
-
-    //     var privateKey = new Buffer(privatekey.slice(2), 'hex')
-    //     var rawTx = {
-    //         from: fromaddress,
-    //         nonce: nonce,
-    //         gasPrice: gasPrice,
-    //         to: toaddress,
-    //         value: balance,
-    //         data: '0x00'//转Token代币会用的一个字段
-    //     }
-    //     //需要将交易的数据进行gas预估，然后将gas值设置到参数中
-    //     let gas = await web3.eth.estimateGas(rawTx)
-    //     rawTx.gas = gas
-
-
-    //     var tx = new Tx(rawTx);
-    //     tx.sign(privateKey);
-    //     var serializedTx = tx.serialize();
-    //     let responseData;
-    //     await web3.eth.sendSignedTransaction('0x' +
-    //         serializedTx.toString('hex'), function (err, data) {
-    //             console.log(err)
-    //             console.log(data)
-
-
-    //             if (err) {
-    //                 responseData = fail(err)
-    //             }
-    //         })
-    //         .then(function (data) {
-    //             console.log(data)
-    //             if (data) {
-    //                 responseData = success({
-    //                     "transactionHash": data.transactionHash
-    //                 })
-    //             } else {
-    //                 responseData = fail("交易失败")
-    //             }
-    //         })
-    //     return Promise.resolve(responseData);
-    // }
-
-
-    // 获取代币，这个用来测试
-    static getContract() {
-        let ABI = [
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "name": "_owner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "name": "_spender",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Approval",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "name": "_from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "name": "_to",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Transfer",
-                "type": "event"
-            },
-            {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "_spender",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "approve",
-                "outputs": [
-                    {
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "_to",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "transfer",
-                "outputs": [
-                    {
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [
-                    {
-                        "name": "_from",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_to",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_value",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "transferFrom",
-                "outputs": [
-                    {
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "name": "_name",
-                        "type": "string"
-                    },
-                    {
-                        "name": "_symbol",
-                        "type": "string"
-                    },
-                    {
-                        "name": "_decimals",
-                        "type": "uint8"
-                    },
-                    {
-                        "name": "_totalSupply",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "_owner",
-                        "type": "address"
-                    },
-                    {
-                        "name": "_spender",
-                        "type": "address"
-                    }
-                ],
-                "name": "allowance",
-                "outputs": [
-                    {
-                        "name": "remaining",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-                    {
-                        "name": "_owner",
-                        "type": "address"
-                    }
-                ],
-                "name": "balanceOf",
-                "outputs": [
-                    {
-                        "name": "balance",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-
-                ],
-                "name": "decimals",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "uint8"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-
-                ],
-                "name": "name",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-
-                ],
-                "name": "symbol",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "string"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [
-
-                ],
-                "name": "totalSupply",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
-
-        let contractAddress = "0xe5b2f5a38d6fe39a45f825d39d4cbf0a0aef5a7e"
-        let myContract = new web3.eth.Contract(ABI, contractAddress)
-        return myContract
-    }
-
-
-
-    /**
-     * 创建合约
-     * @param {*} args 
-     * {
-     *      "ABI":[...],                // ABI
-     *      "contractAddress":"",       // 合约地址
-     * 
-     * }
-     */
-    static createContract(args) {
-        // 参数解构
-        let { ABI, contractAddress } = args;
-        // 创建合约
-        var myContract = new web3.eth.Contract(ABI, contractAddress, {
-            from: '0x1234567890123456789012345678901234567891',         // 交易发起的地址
-            gasPrice: '10000000000000',                                 // 用户交易的gas价格
-            // gas: 1000000,         // 为交易最大提供的最大gas
-            // data: ""             // 合约的字节代码，合约部署时使用
-
-        });
-
-        // 调用线上合约
-        return myContract.methods.myFunction().call().then(data => {
-            // {
-            //     myNumber: '23456',
-            //     myString: 'Hello!%',
-            //     0: '23456', // these are here as fallbacks if the name is not know or  given
-            //     1: 'Hello!%'
-            // }
-            return Promise.resolve(data);
-        });
-    }
-
-
     /**
      * 转账
      * 注意：以太币和Token代币转账是一样的
@@ -562,8 +220,8 @@ class WalletWeb3 {
         let gasPrice = await web3.eth.getGasPrice();
         // 转账金额转换成为wei
         let balance = await web3.utils.toWei(number);
+        console.log('转账金额', number, balance);
 
-        console.log('privatekey',privatekey)
         // 私钥
         var privateKey = new Buffer(privatekey.slice(2), 'hex')
         var rawTx = {
@@ -573,26 +231,6 @@ class WalletWeb3 {
             to: toaddress,//如果转的是token代币，那么这个to就是合约地址
             value: balance,
             data: "0x00" //tokenData                 //转Token代币会用的一个字段
-        }
-
-
-        // 如果是转token代币
-        if (args.token) {
-            let decimals = await myContract.methods.decimals().call();
-            let balance = number * Math.pow(10, decimals);
-            let myBalance = await myContract.methods.balanceOf(fromaddress).call();
-            if (myBalance < balance) {
-                return Promise.reject(new Error("余额不足"));
-            }
-            let tokenData = await myContract.methods.transfer(toaddress, balance).encodeABI();
-            // 转账参数
-            rawTx = {
-                from: fromaddress,
-                nonce: nonce,
-                gasPrice: gasPrice,
-                to: myContract.options.address,         // 那么这个to就是合约地址
-                data: tokenData                         // 指定转token代币
-            }
         }
 
         // 需要将交易的数据进行gas预估，然后将gas值设置到参数中
@@ -623,6 +261,217 @@ class WalletWeb3 {
         });
 
         return Promise.resolve(responseData);
+    }
+
+    /**
+     * 转账
+     * 注意：以太币和Token代币转账是一样的
+     * @param {*} args 
+     */
+    static async sendSignedTransactionByToken(args) {
+        // 参数解构
+        let { contract_address, fromaddress, toaddress, number, privatekey } = args;
+        // 指定地址发出的交易数量
+        let nonce = await web3.eth.getTransactionCount(fromaddress);
+        // 获取当前gas价格，该价格由最近的若干块 的gas价格中值决定
+        let gasPrice = await web3.eth.getGasPrice();
+        // 转账金额转换成为wei
+        let balance = web3.utils.toWei(number, "ether");
+        console.log('转账金额', number, balance);
+
+        // 私钥
+        var privateKey = new Buffer(privatekey.slice(2), 'hex');
+
+        // var rawTx = {
+        //     from: fromaddress,
+        //     nonce: nonce,
+        //     gasPrice: gasPrice,
+        //     to: toaddress,//如果转的是token代币，那么这个to就是合约地址
+        //     value: balance,
+        //     data: "0x00" //tokenData                 //转Token代币会用的一个字段
+        // }
+
+
+
+        let source = fs.readFileSync("./contracts/token.sol", 'utf8');
+
+        console.log('compiling contract...');
+        let compiledContract = solc.compile(source);
+        console.debug('compile done');
+
+        // 检查编译合约是否报错 
+        if (compiledContract.errors) {
+            for (let i = 0; i < compiledContract.errors.length; i++) {
+                let err = compiledContract.errors[i]
+                return Promise.reject(err);
+            }
+        }
+
+
+
+        // const contract = new web3.eth.Contract(iterface);
+        // contract.options.address = contractAddress;
+        // const account = web3.eth.accounts.decrypt(keystore, password);
+        // web3.eth.accounts.wallet.add(account);
+        // const value_wei = web3.utils.toWei(value, 'ether');
+
+
+        // const data = contract.methods.transfer(toAddr, value_wei).encodeABI();
+        // web3.eth.sendTransaction({
+        //     from: fromAddr,
+        //     to: contractAddress,
+        //     value: '0x00',
+        //     gasPrice,
+        //     gas,
+        //     data,
+        // },
+        //     (error, txhash) => {
+        //         callabck(error, txhash);
+        //     });
+
+
+
+
+        // 生成字节码
+        // let bytecode = compiledContract.contracts[":ERC20"].bytecode;
+        let abi = JSON.parse(compiledContract.contracts[":ERC20"].interface);
+
+        // 需要把钱包
+        let account = web3.eth.accounts.privateKeyToAccount(privateKey);
+        web3.eth.accounts.wallet.add(account);
+
+        console.log('args.contract_address', contract_address)
+        // 创建合约对象
+
+        let myContract = new web3.eth.Contract(abi, contract_address);
+
+        // let decimals = await myContract.methods.decimals().call();
+        // let balance = number * Math.pow(10, decimals);
+        let myBalance = await myContract.methods.balanceOf(fromaddress).call();         //fromaddress
+
+        console.log('myBalance', myBalance, balance)
+        console.log('gasPrice', gasPrice)
+        console.log('合约发起人地址>>', myContract.options.address)
+        // if (myBalance < balance) {
+        //     return Promise.reject(new Error("余额不足"));
+        // }
+        let tokenData = await myContract.methods.transfer(toaddress, balance).encodeABI();          //toaddress
+        // 转账参数
+        let rawTx = {
+            from: fromaddress,
+            nonce: nonce,
+            // value: '0x00',
+            gasPrice: gasPrice*2,// gasPrice,
+            gasLimit: 7000000,
+            to: contract_address,                   // 那么这个to就是合约地址 myContract.options.address
+            data: tokenData                         // 指定转token代币
+        }
+
+        // 需要将交易的数据进行gas预估，然后将gas值设置到参数中
+        let gas = await web3.eth.estimateGas(rawTx);
+        console.log("gas>>>", gas);
+        // gas费
+        rawTx.gas = gas;
+        // 交易对象
+        var tx = new Tx(rawTx);
+        // 签名
+        tx.sign(privateKey);
+
+        var serializedTx = tx.serialize();
+        let responseData;
+        // 发送签名交易
+        await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, data) {
+            console.log("err>>", err)
+            console.log("data>>", data)
+            if (err) {
+                return Promise.reject(err);
+            }
+        }).then(data => {
+            console.log("转账结果", data)
+            if (data) {
+                responseData = data;        // 转账hash值
+            } else {
+                return Promise.reject(new Error("交易失败"));
+            }
+        });
+
+        return Promise.resolve(responseData);
+    }
+
+    /**
+     * 创建新合约
+     * @param {JSON} args 
+     * { 
+     *      "fromaddress":"",           // 发起交易地址
+     * }
+     */
+    static createContract(args) {
+
+        //编译合约
+        let source = fs.readFileSync("./contracts/token.sol", 'utf8');
+
+        console.log('compiling contract...');
+        let compiledContract = solc.compile(source);
+        console.debug('compile done');
+
+        // 检查编译合约是否报错 
+        if (compiledContract.errors) {
+            for (let i = 0; i < compiledContract.errors.length; i++) {
+                let err = compiledContract.errors[i]
+                return Promise.reject(err);
+            }
+        }
+
+        // 生成字节码
+        let bytecode = compiledContract.contracts[":ERC20"].bytecode;
+        let abi = JSON.parse(compiledContract.contracts[":ERC20"].interface);
+
+        // 创建合约部分
+        console.log('bytecode')
+        console.log('gasEstimate start ');
+        console.log('deploying contract...');
+
+        // 需要把钱包
+        let account = web3.eth.accounts.privateKeyToAccount(args.privateKey);
+        web3.eth.accounts.wallet.add(account);
+
+        // 创建合约对象
+        let myContract = new web3.eth.Contract(abi);
+
+        console.debug("Contract >>");
+        console.log("gasPrice>>", myContract.options.gasPrice);
+        console.log("from>>", myContract.options.from);
+
+        // 估算交易的gas用量
+        return web3.eth.estimateGas({ data: '0x' + bytecode }).then(gasEstimate => {
+
+            // 发行量，需要转换成为wei的单位值
+            let totalSupply = web3.utils.toWei(args.totalSupply.toString(), 'ether');
+            // 部署合约
+            return myContract.deploy({
+                data: '0x' + bytecode,	                    //已0x开头
+                arguments: [totalSupply, args.name, args.symbol]	      //传递构造函数的参数 1000000, "test contract Aa", "tcaa"
+            }).send({
+                from: args.fromaddress,                 // 发布人地址            
+                gas: 3000000,                           // provide as fallback always 5M gas
+                gasPrice: gasEstimate + 50000,          // (gasEstimate + 50000).toString()      // 用于交易的gas价格（单位：wei）
+                value: 0
+            }, function (error, transactionHash) {
+                console.log("send回调");
+                console.log("error:", error);
+                console.log("send transactionHash:" + transactionHash);
+            })
+                .on('error', function (error) { console.error("error>>", error) })
+                .then(function (newContractInstance) {
+                    var newContractAddress = newContractInstance.options.address
+                    console.log("新合约地址:" + newContractAddress);
+                    return Promise.resolve(newContractAddress);
+                }).catch(ex => {
+                    console.log("ex", ex);
+                    return Promise.resolve(ex);
+                });
+        });
+
     }
 
 

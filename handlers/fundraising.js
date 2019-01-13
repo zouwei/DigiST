@@ -26,6 +26,32 @@ module.exports.initiateFundraising = (ctx) => {
 }
 
 
+// 一键发币
+module.exports.publishToken = (ctx) => {
+    // 参数
+    let body = ctx.body;     // ctx.body;
+    console.log("output args>>", body);
+    // 验证参数
+    if (!body.id || body.id == "") {
+        return ctx.body = ResultCode.returnResult('1', "请输入项目id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "请输入user_id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.address || body.address == "") {
+        return ctx.body = ResultCode.returnResult('1', "请输入address参数", configSpace.systemName, '请求失败');
+    }
+
+    // 募资列表查询
+    return FundraisingService.publishToken(body).then(data => {
+        // 返回结果
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+
+}
+
 // 募资列表查询
 module.exports.getFundraisingList = (ctx) => {
     // 参数

@@ -809,6 +809,78 @@ class UserService {
     }
 
 
+
+    // 合约转账
+    static sendSignedTransactionToConstracts(args) {
+
+        // let { fromaddress, toaddress, number } = args;
+        // 验证钱包地址是否属于当前用户
+        let verifyWalletAddress = () => {
+            // 查询钱包信息
+            return Wallet.findOne({ where: { user_id: args.user_id, address: args.fromaddress } }).then(wallet_info => {
+                if (!wallet_info)
+                    return Promise.reject(new Error(`当前钱包地址不属于当前用户`));
+                // 返回钱包信息
+                return Promise.resolve(wallet_info);
+            });
+        };
+
+
+        let wallet_info;
+        // 验证用户钱包
+        return verifyWalletAddress().then(data => {
+            wallet_info = data;
+            // 私钥
+            let privatekey = RSASecurity.decrypt(wallet_info.privateKey, PASSWORDCERTCONFIG.private_key);
+
+            console.log('发送签名交易参数>>', JSON.stringify(args));
+            // web3发送签名交易
+            return WalletWeb3.sendSignedTransactionByToken({
+                "privatekey": privatekey,
+                "contract_address": args.contract_address,
+                "fromaddress": args.fromaddress,
+                "toaddress": args.toaddress,
+                "number": args.number
+            });
+        }).then(tx => {
+            // 写入交易记录
+            console.log('交易之后的临时变量>>', JSON.stringify(tx));
+
+            let entity = {
+                id: idgen.getID("DIGIST"),
+                user_id: wallet_info.user_id,
+                wallet_id: wallet_info.id,                  // 钱包id 
+                transfer_amount: args.number,               // 转账金额，字符串格式
+                block_hash: tx.blockHash,
+                block_number: tx.blockNumber,
+                contract_address: tx.contractAddress,
+                cumulative_gas_used: tx.cumulativeGasUsed,
+                fromaddress: tx.from,
+                gas_used: tx.gasUsed,
+                status: tx.status,
+                toaddress: tx.to,
+                transaction_hash: tx.transactionHash,
+                transaction_index: tx.transactionIndex,
+                remark: "",
+                created_time: new Date(),
+                created_id: "",
+                update_time: new Date(),
+                update_id: "",
+                valid: 1,
+            }
+            // 创建钱包
+            return Trade.create(entity);
+        }).then(trade_info => {
+            return Promise.resolve({
+                "id": trade_info.id,
+                "transaction_hash": trade_info.transaction_hash
+            });
+        }).catch(ex => {
+            console.log(ex);
+            return Promise.reject(ex);
+        });
+    }
+
     /**
      * 查询用户交易列表
      * @param {JSON} args 

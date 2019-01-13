@@ -16,6 +16,8 @@ module.exports = exports = function (sequelize, DataTypes) {
         project_file: {type: DataTypes.JSON,"comment": "项目文件"},
         project_val: {type: DataTypes.BIGINT(20),"comment": "项目估值（货币单位：分）"},
         currency: {type: DataTypes.STRING(3),"comment": "发行项目估值货币单位：CNY、USD……（参考世界各国货币名称符号大全）"},
+        from_address: {type: DataTypes.STRING(80),"comment": "合约发起人地址"},
+        contract_address: {type: DataTypes.STRING(80),"comment": "合约地址"},
         project_token: {type: DataTypes.STRING(20),"comment": "项目代币：MANA/TRUE"},
         project_scale: {type: DataTypes.BIGINT(20),"comment": "筹集规模（货币单位：分）"},
         project_mode: {type: DataTypes.STRING(20),"comment": "筹集规模式:项目收益权、项目收益权"},

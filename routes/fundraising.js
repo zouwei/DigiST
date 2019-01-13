@@ -9,6 +9,9 @@ router.post('/initiateFundraising', fundraisingHandler.initiateFundraising);
 // 募资列表查询
 router.post('/getFundraisingList', fundraisingHandler.getFundraisingList);
 
+// 一键发币
+router.post('/publishToken', fundraisingHandler.publishToken);
+
 // 募资项目详情信息查询
 router.get('/getFundraisingDetail/:id', fundraisingHandler.getFundraisingDetail);
 
