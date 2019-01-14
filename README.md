@@ -626,7 +626,34 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.8 查询转账交易列表
+#### 3.2.8 代币转账（TOKEN转账）
+
+
+
+| 名称   | 值                        |
+| ------ | ------------------------- |
+| API    | `/ws_digist/fundraising/` |
+| METHOD | POST                      |
+
+**入参**
+
+```js
+
+```
+
+**出参**
+
+```js
+
+```
+
+
+
+
+
+
+
+#### 3.2.9 查询转账交易列表
 
 查询用户的交易记录列表，包含以太币转账记录，token代币转账记录都在这一个表里面。contract_address是合约地址，如果为空表示代币转账。
 
