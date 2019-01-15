@@ -358,7 +358,7 @@ module.exports.getUserTradeList = (ctx) => {
 }
 
 
-
+// 以太币转账
 module.exports.sendSignedTransaction = (ctx) => {
 
     // 参数验证
@@ -386,4 +386,45 @@ module.exports.sendSignedTransaction = (ctx) => {
 }
 
 
+module.exports.getTokenBalance = (ctx) => {
+    let body = ctx.body;
+    return UserService.getTokenBalance(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        console.log(ex)
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+
+
+}
+
+// 代币转账
+module.exports.sendSignedTransactionToConstracts = (ctx) => {
+
+    // 参数验证
+    let body = ctx.body;
+    // 验证参数
+    if (!body.user_id || body.user_id == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少user_id参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.contract_address || body.contract_address == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少contract_address参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.fromaddress || body.fromaddress == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少fromaddress参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.toaddress || body.toaddress == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少toaddress参数", configSpace.systemName, '请求失败');
+    }
+    if (!body.number || body.number == "") {
+        return ctx.body = ResultCode.returnResult('1', "缺少number参数", configSpace.systemName, '请求失败');
+    }
+
+    return UserService.sendSignedTransactionToConstracts(body).then(data => {
+        return ctx.body = ResultCode.success(data, configSpace.systemName, '请求成功');
+    }).catch(ex => {
+        console.log(ex)
+        return ctx.body = ResultCode.returnResult('1', ex.message, configSpace.systemName, '请求失败');
+    });
+}
 

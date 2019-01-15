@@ -263,42 +263,24 @@ class WalletWeb3 {
         return Promise.resolve(responseData);
     }
 
+
     /**
-     * 转账
-     * 注意：以太币和Token代币转账是一样的
-     * @param {*} args 
+     * 查询代币余额
+     * @param {JOSN} args 
+     * {
+     *      "contract_address":"",          // 合约地址
+     *      "fromaddress":""                // 查询账户地址
+     * }
      */
-    static async sendSignedTransactionByToken(args) {
+    static getTokenBalance(args) {
         // 参数解构
-        let { contract_address, fromaddress, toaddress, number, privatekey } = args;
-        // 指定地址发出的交易数量
-        let nonce = await web3.eth.getTransactionCount(fromaddress);
-        // 获取当前gas价格，该价格由最近的若干块 的gas价格中值决定
-        let gasPrice = await web3.eth.getGasPrice();
-        // 转账金额转换成为wei
-        let balance = web3.utils.toWei(number, "ether");
-        console.log('转账金额', number, balance);
-
-        // 私钥
-        var privateKey = new Buffer(privatekey.slice(2), 'hex');
-
-        // var rawTx = {
-        //     from: fromaddress,
-        //     nonce: nonce,
-        //     gasPrice: gasPrice,
-        //     to: toaddress,//如果转的是token代币，那么这个to就是合约地址
-        //     value: balance,
-        //     data: "0x00" //tokenData                 //转Token代币会用的一个字段
-        // }
-
-
-
+        let { contract_address, fromaddress } = args;
+        // 指定地址发出的交易数量 
         let source = fs.readFileSync("./contracts/token.sol", 'utf8');
-
         console.log('compiling contract...');
         let compiledContract = solc.compile(source);
         console.debug('compile done');
-
+        
         // 检查编译合约是否报错 
         if (compiledContract.errors) {
             for (let i = 0; i < compiledContract.errors.length; i++) {
@@ -307,96 +289,26 @@ class WalletWeb3 {
             }
         }
 
-
-
-        // const contract = new web3.eth.Contract(iterface);
-        // contract.options.address = contractAddress;
-        // const account = web3.eth.accounts.decrypt(keystore, password);
-        // web3.eth.accounts.wallet.add(account);
-        // const value_wei = web3.utils.toWei(value, 'ether');
-
-
-        // const data = contract.methods.transfer(toAddr, value_wei).encodeABI();
-        // web3.eth.sendTransaction({
-        //     from: fromAddr,
-        //     to: contractAddress,
-        //     value: '0x00',
-        //     gasPrice,
-        //     gas,
-        //     data,
-        // },
-        //     (error, txhash) => {
-        //         callabck(error, txhash);
-        //     });
-
-
-
-
         // 生成字节码
-        // let bytecode = compiledContract.contracts[":ERC20"].bytecode;
         let abi = JSON.parse(compiledContract.contracts[":ERC20"].interface);
-
-        // 需要把钱包
-        let account = web3.eth.accounts.privateKeyToAccount(privateKey);
-        web3.eth.accounts.wallet.add(account);
 
         console.log('args.contract_address', contract_address)
         // 创建合约对象
 
         let myContract = new web3.eth.Contract(abi, contract_address);
-
-        // let decimals = await myContract.methods.decimals().call();
-        // let balance = number * Math.pow(10, decimals);
-        let myBalance = await myContract.methods.balanceOf(fromaddress).call();         //fromaddress
-
-        console.log('myBalance', myBalance, balance)
-        console.log('gasPrice', gasPrice)
-        console.log('合约发起人地址>>', myContract.options.address)
-        // if (myBalance < balance) {
-        //     return Promise.reject(new Error("余额不足"));
-        // }
-        let tokenData = await myContract.methods.transfer(toaddress, balance).encodeABI();          //toaddress
-        // 转账参数
-        let rawTx = {
-            from: fromaddress,
-            nonce: nonce,
-            // value: '0x00',
-            gasPrice: gasPrice*2,// gasPrice,
-            gasLimit: 7000000,
-            to: contract_address,                   // 那么这个to就是合约地址 myContract.options.address
-            data: tokenData                         // 指定转token代币
-        }
-
-        // 需要将交易的数据进行gas预估，然后将gas值设置到参数中
-        let gas = await web3.eth.estimateGas(rawTx);
-        console.log("gas>>>", gas);
-        // gas费
-        rawTx.gas = gas;
-        // 交易对象
-        var tx = new Tx(rawTx);
-        // 签名
-        tx.sign(privateKey);
-
-        var serializedTx = tx.serialize();
-        let responseData;
-        // 发送签名交易
-        await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, data) {
-            console.log("err>>", err)
-            console.log("data>>", data)
-            if (err) {
-                return Promise.reject(err);
-            }
-        }).then(data => {
-            console.log("转账结果", data)
-            if (data) {
-                responseData = data;        // 转账hash值
-            } else {
-                return Promise.reject(new Error("交易失败"));
-            }
+        // 查询合约代币余额
+        return myContract.methods.balanceOf(fromaddress).call().then(myBalance => {
+            console.log('myBalance>>>', myBalance);
+            // 单位换算
+            myBalance = web3.utils.fromWei(myBalance);
+            // 返回代币余额
+            return Promise.resolve(myBalance);
         });
 
-        return Promise.resolve(responseData);
+
     }
+
+
 
     /**
      * 创建新合约
@@ -417,8 +329,8 @@ class WalletWeb3 {
         // 检查编译合约是否报错 
         if (compiledContract.errors) {
             for (let i = 0; i < compiledContract.errors.length; i++) {
-                let err = compiledContract.errors[i]
-                return Promise.reject(err);
+                // 直接抛错
+                return Promise.reject(new Error(compiledContract.errors[i]));
             }
         }
 

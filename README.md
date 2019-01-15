@@ -8,6 +8,7 @@
 
 | 版本编号 | 版本日期   | 修改者 | 说明                           |
 | -------- | ---------- | ------ | ------------------------------ |
+| v0.0.6   | 2019-01-14 | 胡邹   | 新增智能合约相关接口           |
 | v0.0.5   | 2019-01-12 | 胡邹   | 新增转账接口                   |
 | v0.0.4   | 2019-01-10 | 胡邹   | 增加了钱包接口                 |
 | v0.0.3   | 2019-01-09 | 胡邹   | 新增部分钱包接口和接口规范定义 |
@@ -626,25 +627,39 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.8 代币转账（TOKEN转账）
+#### 3.2.8 代币转账（合约转账）
 
+token代币转账接口和以太币转账接口区分开来，步骤有很大的相似性，在查询交易记录的时候，可以通过区分合约地址来区分是以太币还是代币的转账记录。
 
-
-| 名称   | 值                        |
-| ------ | ------------------------- |
-| API    | `/ws_digist/fundraising/` |
-| METHOD | POST                      |
+| 名称   | 值                                             |
+| ------ | ---------------------------------------------- |
+| API    | `/ws_digist/user/sendSignedTransactionByToken` |
+| METHOD | POST                                           |
 
 **入参**
 
 ```js
-
+// token代币转账
+{
+    "user_id":"4449010040510C20375C0000",				// 用户id
+    "contract_address":"0x5821feC54CE3081F61ca863fb57C0602047EaE8c",	// 合约地址
+    "fromaddress":"0x25090d091a19CAbD722F508776ffc2c44119C24B",	 // 转账人（购买人）
+    "number": "1" 			// 代币数量
+}
 ```
 
 **出参**
 
 ```js
-
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100300B61593B5C0000",
+        "transaction_hash": "0x1a2ec75c6f23e82698eee06aaafd8c69067b0a66138a28d933753f667cc41cc3"
+    }
+}
 ```
 
 
@@ -657,6 +672,8 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 查询用户的交易记录列表，包含以太币转账记录，token代币转账记录都在这一个表里面。contract_address是合约地址，如果为空表示代币转账。
 
+以太币转账与智能合约代币转账的记录在一个数据表，通过不同的查询条件模型来判断。
+
 | 名称   | 值                                 |
 | ------ | ---------------------------------- |
 | API    | `/ws_digist/user/getUserTradeList` |
@@ -665,11 +682,34 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 **入参**
 
 ```js
+// 查询某个用户的全部转账记录（以太币和代币）
 {
-    "pageSize":2,
-    "pageIndex":1,
+    "pageSize":10,		// 分页数据大小，每页数据记录数
+    "pageIndex":1,		// 页索引
     "where":{
 		"user_id":"4449010040510C20375C0000"
+    }
+}
+
+// 查询用户以太币转账记录
+{
+    "pageSize":10,
+    "pageIndex":1,
+    "where":{
+		"user_id":"4449010040510C20375C0000",
+        "contract_address":null					// 合约地址为null，表示查询以太币转账记录
+    }
+}
+
+// 查询用户代币转账记录
+{
+    "pageSize":10,
+    "pageIndex":1,
+    "where":{
+		"user_id":"4449010040510C20375C0000",
+            "contract_address":{
+                $ne:null	 // 等效于contract_address != null 表示查询合约代币转账记录
+            }
     }
 }
 ```
@@ -1037,6 +1077,29 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
+#### 3.
+
+
+
+| 名称   | 值                        |
+| ------ | ------------------------- |
+| API    | `/ws_digist/fundraising/` |
+| METHOD | POST                      |
+
+**入参**
+
+```js
+
+```
+
+**出参**
+
+```js
+
+```
+
+
+
 
 
 
@@ -1129,6 +1192,7 @@ Post.findAll({
 }
 // title LIKE 'Boat%' OR description LIKE '%boat%'
 ```
+查询条件模型操作符与sql条件的对照
 
 | op                             | define                                                       |
 | ------------------------------ | ------------------------------------------------------------ |
@@ -1158,26 +1222,3 @@ Post.findAll({
 
 
 
-
-
-
-
-const contract = new web3.eth.Contract(iterface);
-  contract.options.address = contractAddress;
-  const account = web3.eth.accounts.decrypt(keystore, password);
-  web3.eth.accounts.wallet.add(account);
-  const value_wei = web3.utils.toWei(value, 'ether');
-
-
-  const data = contract.methods.transfer(toAddr, value_wei).encodeABI();
-  web3.eth.sendTransaction({
-​    from: fromAddr,
-​    to: contractAddress,
-​    value: '0x00',
-​    gasPrice,
-​    gas,
-​    data,
-  },
-  (error, txhash) => {
-​    callabck(error, txhash);
-  });

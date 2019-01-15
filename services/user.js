@@ -808,12 +808,50 @@ class UserService {
         });
     }
 
+    /**
+     * 查询代币余额
+     * @param {JOSN} args 
+     * {
+     *      "user_id":"",                       // 用户id
+     *      "fromaddress":"",                   // 查询账户地址
+     *      "contract_address":""               // 合约地址
+     * }
+     */
+    static getTokenBalance(args) {
+
+        // 验证钱包地址是否属于当前用户
+        let verifyWalletAddress = () => {
+            // 查询钱包信息
+            return Wallet.findOne({ where: { user_id: args.user_id, address: args.fromaddress } }).then(wallet_info => {
+                if (!wallet_info)
+                    return Promise.reject(new Error(`当前钱包地址不属于当前用户`));
+                // 返回钱包信息
+                return Promise.resolve(wallet_info);
+            });
+        };
+
+        // 查询余额
+        return verifyWalletAddress().then(() => {
+            return WalletWeb3.getTokenBalance(args);
+        })
 
 
-    // 合约转账
+    }
+
+
+    /**
+     * 合约转账
+     * @param {JSON} args 
+     *   {
+     *       "user_id":"44490100782A0F0C365C0000",	
+     *       "contract_address":"0xA49D6ac4aDEAEfA6a951A3c91d75B80A03cA4ddc",
+     *       "fromaddress":"0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d",
+     *       "toaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B",  
+     *       "number": "1" 
+     *   }
+     */
     static sendSignedTransactionToConstracts(args) {
 
-        // let { fromaddress, toaddress, number } = args;
         // 验证钱包地址是否属于当前用户
         let verifyWalletAddress = () => {
             // 查询钱包信息
@@ -826,6 +864,15 @@ class UserService {
         };
 
 
+        /*
+            1.验证当前合约地址是否投资过了
+            2.转账投资
+            3.如果没有则写入投资记录
+            4.如果有记录则修改记录
+            5.写入交易记录
+
+        */
+
         let wallet_info;
         // 验证用户钱包
         return verifyWalletAddress().then(data => {
@@ -835,13 +882,21 @@ class UserService {
 
             console.log('发送签名交易参数>>', JSON.stringify(args));
             // web3发送签名交易
-            return WalletWeb3.sendSignedTransactionByToken({
+            return WalletWeb3.sendSignedTransaction({
                 "privatekey": privatekey,
-                "contract_address": args.contract_address,
                 "fromaddress": args.fromaddress,
-                "toaddress": args.toaddress,
+                "toaddress": args.contract_address,
                 "number": args.number
             });
+
+            //   return WalletWeb3.sendSignedTransactionToConstracts({
+            //                 "privatekey": privatekey,
+            //                 "contract_address": args.contract_address,
+            //                 "fromaddress": args.fromaddress,
+            //                 "toaddress": args.toaddress,
+            //                 "number": args.number
+            //             });
+
         }).then(tx => {
             // 写入交易记录
             console.log('交易之后的临时变量>>', JSON.stringify(tx));

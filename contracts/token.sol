@@ -1,10 +1,12 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.4.20;
 
 contract ERC20Interface {
   string public name;
   string public symbol;
   uint256 public constant decimals = 18;
   uint public totalSupply;
+  uint256 public AlreadReleas;
+  address public founder;
 
 
   function transfer(address _to, uint256 _value) public returns (bool success);
@@ -26,7 +28,7 @@ contract ERC20 is ERC20Interface {
         totalSupply = _totalSupply * 10 ** decimals;
         name = _name;
         symbol = _symbol;
-        balanceOf[msg.sender] = totalSupply;
+        founder = msg.sender;
     }
 
   function balanceOf(address _owner) view public returns (uint256 balance) {
@@ -66,6 +68,14 @@ contract ERC20 is ERC20Interface {
 
   function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
       return allowed[_owner][_spender];
+  }
+  
+  function () public payable {
+    require(AlreadReleas<totalSupply);
+    
+    founder.transfer(msg.value);
+    balanceOf[msg.sender] += msg.value;
+    AlreadReleas += msg.value;
   }
 
 }

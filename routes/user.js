@@ -60,10 +60,12 @@ router.post('/importWalletByKeystore', userHandler.importWalletByKeystore);
 router.post('/exportWalletKeystore', userHandler.exportWalletKeystore);
 // 分页查询用户交易列表
 router.post('/getUserTradeList', userHandler.getUserTradeList);
-// 发起转账
+// 以太币转账
 router.post('/sendSignedTransaction', userHandler.sendSignedTransaction);
-
-
+// 代币转账
+router.post('/sendSignedTransactionToConstracts', userHandler.sendSignedTransactionToConstracts);
+// 代币余额查询
+router.post('/getTokenBalance', userHandler.getTokenBalance);
 
 
 module.exports = exports = router

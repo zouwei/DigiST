@@ -5,7 +5,7 @@ const { FundraisingService } = require("../services/fundraising");
 const { Sequelize } = require("../modelservices");
 
 suite('Fundraising unit testing', function () {
-
+    
     // 募资：发起募资项目
     test("test initiateFundraising()", function () {
         // 定义参数
@@ -58,9 +58,26 @@ suite('Fundraising unit testing', function () {
         });
     });
 
-/*
+    // 测试：一键发币
+    test("test publishToken()", function () {
 
+        let args = {
+            id: "555301000C119D03225C0000",                                // 项目id
+            user_id: "4449010040510C20375C0000",
+            address: "0x25090d091a19CAbD722F508776ffc2c44119C24B"
+        }
 
+        console.log("参数打印>>", args);
 
-*/
+        // 转成交易
+        return FundraisingService.publishToken(args).then(data => {
+            console.log("结果>>", data)
+            // 结果 
+            assert.isString(data, "发币成功");
+        }).catch(ex => {
+            console.log(ex);
+            assert.isString(ex, "发币失败");
+        });
+    });
+
 });
