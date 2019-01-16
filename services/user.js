@@ -6,7 +6,7 @@ const idgen = require('../common/generateid');
 // 加密模块
 const { RSASecurity } = require('../common/security');
 // ORM对象模块
-var { UserInfo, Wallet, Trade } = require("../modelservices");
+var { UserInfo, Wallet, Trade, Fundraising, Invest } = require("../modelservices");
 const config = require('config')
 const PASSWORDCERTCONFIG = config.get('global.dataEncryption');
 // web3钱包
@@ -845,8 +845,7 @@ class UserService {
      *   {
      *       "user_id":"44490100782A0F0C365C0000",	
      *       "contract_address":"0xA49D6ac4aDEAEfA6a951A3c91d75B80A03cA4ddc",
-     *       "fromaddress":"0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d",
-     *       "toaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B",  
+     *       "fromaddress":"0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d", 
      *       "number": "1" 
      *   }
      */
@@ -862,6 +861,65 @@ class UserService {
                 return Promise.resolve(wallet_info);
             });
         };
+        // 验证合约地址
+        let verifyFundraising = () => {
+            return Fundraising.findOne({ where: { contract_address: args.contract_address } }).then(fundraising_info => {
+                if (!fundraising_info)
+                    return Promise.reject(new Error(`未查询到相关的合约项目`));
+                // 返回钱包信息
+                return Promise.resolve(fundraising_info);
+            });
+        }
+        // 验证投资项目
+        let verifyInvest = (user_id, fundraising_id) => {
+            // 查询钱包信息
+            return Invest.findOne({ where: { user_id: user_id, fundraising_id: fundraising_id } }).then(invest_info => {
+                // 返回投资项目信息
+                return Promise.resolve(invest_info);
+            });
+        };
+        // 更新投资项目
+        let updateInvestInfo = (fundraising_info, invest_info) => {
+            // 交易信息
+            if (invest_info) {
+                // 需要更新的信息
+                invest_info.subscription_quantity += parseFloat(args.number);
+                invest_info.buying_times += 1;
+                // 更新
+                return Invest.update({
+                    "subscription_quantity": invest_info.subscription_quantity,
+                    "buying_times": invest_info.buying_times,
+                    "update_time": new Date()
+                }, {
+                        "where": { "id": invest_info.id }
+                    }).then(() => {
+                        // 返回信息
+                        return Promise.resolve(invest_info);
+                    });
+            } else {
+                // 新增
+                let entity = {
+                    id: idgen.getID("DIGIST"),
+                    user_id: args.user_id,
+                    fundraising_id: fundraising_info.id,
+                    project_name: fundraising_info.project_name,
+                    subscription_quantity: args.number,
+                    project_status: "已投资",
+                    buying_times: 1,
+                    contract_address: fundraising_info.contract_address,
+                    remark: "",
+                    created_time: new Date(),
+                    created_id: args.user_id,
+                    update_time: new Date(),
+                    update_id: args.user_id,
+                    valid: 1,
+                }
+                return Invest.create(entity).then(() => {
+                    return Promise.resolve(entity);
+                })
+            }
+
+        }
 
 
         /*
@@ -874,9 +932,24 @@ class UserService {
         */
 
         let wallet_info;
+        let fundraising_info;
+        let invest_info;
+        let trade_info;        // 交易记录
         // 验证用户钱包
         return verifyWalletAddress().then(data => {
+            // 钱包信息
             wallet_info = data;
+            // 验证合约地址
+            return verifyFundraising();
+        }).then(data => {
+            // 投资项目
+            fundraising_info = data;
+            // 验证投资项目
+            return verifyInvest(args.user_id, fundraising_info.id);
+        }).then((data) => {
+            // 我的投资项目
+            invest_info = data;
+            // 通过之后进行转账
             // 私钥
             let privatekey = RSASecurity.decrypt(wallet_info.privateKey, PASSWORDCERTCONFIG.private_key);
 
@@ -888,27 +961,19 @@ class UserService {
                 "toaddress": args.contract_address,
                 "number": args.number
             });
-
-            //   return WalletWeb3.sendSignedTransactionToConstracts({
-            //                 "privatekey": privatekey,
-            //                 "contract_address": args.contract_address,
-            //                 "fromaddress": args.fromaddress,
-            //                 "toaddress": args.toaddress,
-            //                 "number": args.number
-            //             });
-
         }).then(tx => {
+            // 交易记录 
             // 写入交易记录
             console.log('交易之后的临时变量>>', JSON.stringify(tx));
-
-            let entity = {
+            // 交易记录
+            trade_info = {
                 id: idgen.getID("DIGIST"),
                 user_id: wallet_info.user_id,
                 wallet_id: wallet_info.id,                  // 钱包id 
                 transfer_amount: args.number,               // 转账金额，字符串格式
                 block_hash: tx.blockHash,
                 block_number: tx.blockNumber,
-                contract_address: tx.contractAddress,
+                contract_address: args.contractAddress,           // 合约地址需要从入参指定
                 cumulative_gas_used: tx.cumulativeGasUsed,
                 fromaddress: tx.from,
                 gas_used: tx.gasUsed,
@@ -918,14 +983,18 @@ class UserService {
                 transaction_index: tx.transactionIndex,
                 remark: "",
                 created_time: new Date(),
-                created_id: "",
+                created_id: args.user_id,
                 update_time: new Date(),
-                update_id: "",
+                update_id: args.user_id,
                 valid: 1,
             }
             // 创建钱包
-            return Trade.create(entity);
-        }).then(trade_info => {
+            return Trade.create(trade_info);
+        }).then(() => {
+            // 更新或者写入投资项目记录
+            return updateInvestInfo(fundraising_info, invest_info);
+        }).then(data => {
+            // 返回交易记录
             return Promise.resolve({
                 "id": trade_info.id,
                 "transaction_hash": trade_info.transaction_hash
