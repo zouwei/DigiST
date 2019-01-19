@@ -57,7 +57,7 @@ class FundraisingService {
             investment_period: args.investment_period || "3Y",          // 投资年限:3Y（最后一位表示日期单位：Y、M、D，分别表示年、月、日）
             equity_income: args.equity_income,                          // 股权收益权（单位：百分比）
             exit_early: args.exit_early || "无",                        // 提前退出窗口
-            project_status: "new",                                      // 项目状态:new、voting、raise、finished、fail、closed
+            project_status: "new",                                      // 项目状态:new、voting、raise、published、finished、fail、closed
             follow: 0,                                                  // 关注度
             vote_target: 0,                                             // 选票目标
             subscribed_quantity: 0,                                     // 已认购数量
@@ -148,7 +148,7 @@ class FundraisingService {
             // 修改合约地址
             return Fundraising.update({
                 "contract_address": data,
-                "project_status": "finished",
+                "project_status": "published",
                 "created_id": "",
                 "update_id": ""
             }, { "where": { "id": args.id } });
