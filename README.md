@@ -75,10 +75,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 页面图形验证码，主要作用是防止对一些付费接口的流量攻击，发送短信是有成本的，通过引入图形验证码能在一定程度上预防这种流量攻击。
 
-| 名称   | 值                           |
-| ------ | ---------------------------- |
-| API    | `/ws_digist/user/getCaptcha` |
-| METHOD | get                          |
+| 名称   | 值                          |
+| ------ | --------------------------- |
+| API    | `ws_digist/user/getCaptcha` |
+| METHOD | get                         |
 
 图形验证码接口是一个GET接口，在前端HTML中的img标签直接指向src即可。
 
@@ -94,10 +94,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 发送短信验证码，发送短信验证码接口已经一个通用的接口，在多种需要使用短信验证码的场景中使用这一个接口。
 
-| 名称   | 值                                     |
-| ------ | -------------------------------------- |
-| API    | `/ws_digist/user/sendVerificationCode` |
-| METHOD | POST                                   |
+| 名称   | 值                                    |
+| ------ | ------------------------------------- |
+| API    | `ws_digist/user/sendVerificationCode` |
+| METHOD | POST                                  |
 
 **入参**
 
@@ -123,10 +123,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 新用户注册
 
-| 名称   | 值                             |
-| ------ | ------------------------------ |
-| API    | `/ws_digist/user/userRegister` |
-| METHOD | POST                           |
+| 名称   | 值                            |
+| ------ | ----------------------------- |
+| API    | `ws_digist/user/userRegister` |
+| METHOD | POST                          |
 
 **入参**
 
@@ -155,10 +155,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 根据手机号码找回密码
 
-| 名称   | 值                                 |
-| ------ | ---------------------------------- |
-| API    | `/ws_digist/user/retrievePassword` |
-| METHOD | POST                               |
+| 名称   | 值                                |
+| ------ | --------------------------------- |
+| API    | `ws_digist/user/retrievePassword` |
+| METHOD | POST                              |
 
 **入参**
 
@@ -192,10 +192,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 用户登录，根据手机号码登录，暂时没开发邮箱登录，其他登录方式使用同一个API，传入不同的值即可。
 
-| 名称   | 值                          |
-| ------ | --------------------------- |
-| API    | `/ws_digist/user/userLogin` |
-| METHOD | POST                        |
+| 名称   | 值                         |
+| ------ | -------------------------- |
+| API    | `ws_digist/user/userLogin` |
+| METHOD | POST                       |
 
 **入参**
 
@@ -226,10 +226,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 如果是已经设置过了登录密码，则需要输入旧密码验证通过之后才能修改成功。
 
-| 名称   | 值                               |
-| ------ | -------------------------------- |
-| API    | `/ws_digist/user/changePassword` |
-| METHOD | POST                             |
+| 名称   | 值                              |
+| ------ | ------------------------------- |
+| API    | `ws_digist/user/changePassword` |
+| METHOD | POST                            |
 
 **入参**
 
@@ -266,10 +266,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 如果是已经设置过了支付密码，则需要输入旧密码验证通过之后才能修改成功。
 
-| 名称   | 值                                  |
-| ------ | ----------------------------------- |
-| API    | `/ws_digist/user/changePayPassword` |
-| METHOD | POST                                |
+| 名称   | 值                                 |
+| ------ | ---------------------------------- |
+| API    | `ws_digist/user/changePayPassword` |
+| METHOD | POST                               |
 
 **入参**
 
@@ -306,10 +306,10 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 进入钱包首页之后，首先查询用户钱包信息，如果没有
 
-| 名称   | 值                  |
-| ------ | ------------------- |
-| API    | `/ws_service/user/` |
-| METHOD | POST                |
+| 名称   | 值                 |
+| ------ | ------------------ |
+| API    | `ws_service/user/` |
+| METHOD | POST               |
 
 **入参**
 
@@ -345,16 +345,52 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 
 
-#### 3.2.2 查询用户钱包余额
+#### 3.2.2 创建用户钱包
+
+先查询用户钱包，如果钱包不存在，可以创建钱包或者导入钱包
+
+| 名称   | 值                                 |
+| ------ | ---------------------------------- |
+| API    | `ws_service/user/createUserWallet` |
+| METHOD | POST                               |
+
+**入参**
+
+```js
+{
+	"user_id":"49440100583A36F61E5C0000"
+}
+```
+
+**出参**
+
+```js
+{
+    "code": "0",
+    "msg": "请求成功",
+    "module": "DigiST",
+    "result": {
+        "id": "44490100EC2BA504375C0000",
+        "address": "0xAB79E60d600e1746D0a4e82d3E4ad7B952309f06",
+        "mnemonic": "spray trash daring critic give armor baby scale move head frown kingdom"
+    }
+}
+```
+
+
+
+
+
+#### 3.2.3 查询以太币余额
 
 查询用户钱包（包含TOKEN代币）账户余额，根据3.2.1查询到用户钱包address的情况，再查询此接口，可以采用一定策略及时的更新用户的钱包余额情况，例如在tab卡片切换到钱包的时候执行查询，或者定时查询，或者投资项目之后执行查询。
 
 **暂时空缺，细节有待明确下**
 
-| 名称   | 值                                      |
-| ------ | --------------------------------------- |
-| API    | `/ws_service/user/getUserWalletBalance` |
-| METHOD | POST                                    |
+| 名称   | 值                                     |
+| ------ | -------------------------------------- |
+| API    | `ws_service/user/getUserWalletBalance` |
+| METHOD | POST                                   |
 
 **入参**
 
@@ -389,20 +425,22 @@ services：业务逻辑层，业务逻辑代码写在这一层。
 
 
 
-#### 3.2.3 创建用户钱包
+#### 3.2.4 查询到代币余额
 
-先查询用户钱包，如果钱包不存在，可以创建钱包或者导入钱包
 
-| 名称   | 值                                  |
-| ------ | ----------------------------------- |
-| API    | `/ws_service/user/createUserWallet` |
-| METHOD | POST                                |
+
+| 名称   | 值                               |
+| ------ | -------------------------------- |
+| API    | `ws_digist/user/getTokenBalance` |
+| METHOD | POST                             |
 
 **入参**
 
 ```js
 {
-	"user_id":"49440100583A36F61E5C0000"
+    "user_id":"44490100782A0F0C365C0000", // 用户id
+    "contract_address":"0xA49D6ac4aDEAEfA6a951A3c91d75B80A03cA4ddc",// 合约地址
+    "fromaddress":"0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d"// 查询账户地址
 }
 ```
 
@@ -413,46 +451,20 @@ services：业务逻辑层，业务逻辑代码写在这一层。
     "code": "0",
     "msg": "请求成功",
     "module": "DigiST",
-    "result": {
-        "id": "44490100EC2BA504375C0000",
-        "address": "0xAB79E60d600e1746D0a4e82d3E4ad7B952309f06",
-        "mnemonic": "spray trash daring critic give armor baby scale move head frown kingdom"
-    }
+    "result": "1.3"		// 已换算，1:1TRUE
 }
 ```
 
 
 
-
-
-~~~
-// 测试数据，请忽略
-{
-    "code": "0",
-    "msg": "请求成功",
-    "module": "DigiST",
-    "result": {
-        "id": "444901006C33F824375C0000",
-        "address": "0xEb884D11B524945Bb88d47eC51a8B9971F665cA8",
-        "mnemonic": "flag hidden clutch gun benefit crumble public endless swear spring connect fade"
-    }
-}
-
-
-INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `privateKey`, `keystore`, `balance`, `remark`, `created_time`, `created_id`, `update_time`, `update_id`, `valid`) VALUES ('444901006C33F824375C0000', '49440100583A36F61E5C0000', '0xEb884D11B524945Bb88d47eC51a8B9971F665cA8', 'cp+FJSYMmBOmdq6qvIWacbmqVsFz4xiUNYBhK7FmNNYzYgFYn+uYD5QNvC1gMftyzjA4iMzSK1f1rxKjMEKM5qyNPSHI2s7kQfhMm9m1rvjSpK7n8XDZqE4iJ8soCX88oIKlKiiS/ZH7a6M83ppRSdEnvgpulEFgQ/tm+hy14rFNye9IUCxQplyzQWuGKTU4BRcZf0PdR5BqW36NIXG4RrmCCqsf01hLBGhiDPUe1TcOAHqrtkiqPQDuW54URB6NBdXVOY7b3UBKI4GX0QzFUeaYKkfNYP7NB8BtjLoJqfkMVB3GJNAY6fCntItfDgtUzAUfG1tqiMVZIFeQLsSOlg==', 'ZmVjdivpV1vLNWPUthElK3WgIjUdqpirIezpAAaMkUV6/1kZJYMdijDvQx8pHoCJez912znq9pI/bntPsviz4mzwcWvUT3IHT2lxnC2PSzw/v5DIEv+gON6566WwOM4MkMLA8IvtcAOMt/HPa8+CyPTFtTx9HYmiNyDxOmzSL3HFjdRQhGgqbG/9/jrRQGepMSGEh49mcyS3X8m6TYkeFEVf2BAazoZQviEj2On9425s0T5oMBhgkS9Cq+qZlbiMk2vGC0bYwDah9sSC1i/wITOt+ZeZZ4VYCj65eoGYKuNEobH8aBpwUEyt8TIchiy2RelWQ5bmvHLKqsjg6dBZ1A==', '', 0.00, '', '2019-01-10 18:56:55.000', '', '2019-01-10 18:56:55.000', '', 1);
-
-~~~
+#### 3.2.5 根据助记词导入钱包
 
 
 
-#### 3.2.4 根据助记词导入钱包
-
-
-
-| 名称   | 值                                        |
-| ------ | ----------------------------------------- |
-| API    | `/ws_service/user/importWalletByMnemonic` |
-| METHOD | POST                                      |
+| 名称   | 值                                       |
+| ------ | ---------------------------------------- |
+| API    | `ws_service/user/importWalletByMnemonic` |
+| METHOD | POST                                     |
 
 **入参**
 
@@ -479,14 +491,14 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.5 根据keystore+密码导入钱包
+#### 3.2.6 根据keystore+密码导入钱包
 
 貌似还有点问题
 
-| 名称   | 值                                        |
-| ------ | ----------------------------------------- |
-| API    | `/ws_service/user/importWalletByKeystore` |
-| METHOD | POST                                      |
+| 名称   | 值                                       |
+| ------ | ---------------------------------------- |
+| API    | `ws_service/user/importWalletByKeystore` |
+| METHOD | POST                                     |
 
 **入参**
 
@@ -538,14 +550,14 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.6 导出keystore
+#### 3.2.7 导出keystore
 
 导出keystore（需要根据支付密码设置）
 
-| 名称   | 值                                      |
-| ------ | --------------------------------------- |
-| API    | `/ws_service/user/exportWalletKeystore` |
-| METHOD | POST                                    |
+| 名称   | 值                                     |
+| ------ | -------------------------------------- |
+| API    | `ws_service/user/exportWalletKeystore` |
+| METHOD | POST                                   |
 
 **入参**
 
@@ -592,14 +604,14 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.7 转账（以太币转账）
+#### 3.2.8 转账（以太币转账）
 
 转账分几种情况，以太币转账（如TRUE币转账），此外还有一种智能合约代币（TOKEN）转账，此接口是用来代币转账的接口
 
-| 名称   | 值                                       |
-| ------ | ---------------------------------------- |
-| API    | `/ws_service/user/sendSignedTransaction` |
-| METHOD | POST                                     |
+| 名称   | 值                                      |
+| ------ | --------------------------------------- |
+| API    | `ws_service/user/sendSignedTransaction` |
+| METHOD | POST                                    |
 
 **入参**
 
@@ -629,14 +641,14 @@ INSERT INTO `digist_db`.`dst_wallet`(`id`, `user_id`, `address`, `mnemonic`, `pr
 
 
 
-#### 3.2.8 代币买入（合约转账）
+#### 3.2.9 代币买入（合约转账）
 
 token代币转账接口和以太币转账接口区分开来，步骤有很大的相似性，在查询交易记录的时候，可以通过区分合约地址来区分是以太币还是代币的转账记录。
 
-| 名称   | 值                                             |
-| ------ | ---------------------------------------------- |
-| API    | `/ws_digist/user/sendSignedTransactionByToken` |
-| METHOD | POST                                           |
+| 名称   | 值                                            |
+| ------ | --------------------------------------------- |
+| API    | `ws_digist/user/sendSignedTransactionByToken` |
+| METHOD | POST                                          |
 
 **入参**
 
@@ -670,16 +682,16 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
 
 
 
-#### 3.2.9 查询转账交易列表
+#### 3.2.10 查询转账交易列表
 
 查询用户的交易记录列表，包含以太币转账记录，token代币转账记录都在这一个表里面。contract_address是合约地址，如果为空表示代币转账。
 
 以太币转账与智能合约代币转账的记录在一个数据表，通过不同的查询条件模型来判断。
 
-| 名称   | 值                                 |
-| ------ | ---------------------------------- |
-| API    | `/ws_digist/user/getUserTradeList` |
-| METHOD | POST                               |
+| 名称   | 值                                |
+| ------ | --------------------------------- |
+| API    | `ws_digist/user/getUserTradeList` |
+| METHOD | POST                              |
 
 **入参**
 
@@ -789,10 +801,10 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
 
 发起项目募资，接口数据不完整的话进一步补充字段
 
-| 名称   | 值                                           |
-| ------ | -------------------------------------------- |
-| API    | `/ws_digist/fundraising/initiateFundraising` |
-| METHOD | POST                                         |
+| 名称   | 值                                          |
+| ------ | ------------------------------------------- |
+| API    | `ws_digist/fundraising/initiateFundraising` |
+| METHOD | POST                                        |
 
 **入参**
 
@@ -864,10 +876,10 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
 
 
 
-| 名称   | 值                                     |
-| ------ | -------------------------------------- |
-| API    | `/ws_service/fundraising/publishToken` |
-| METHOD | POST                                   |
+| 名称   | 值                                    |
+| ------ | ------------------------------------- |
+| API    | `ws_service/fundraising/publishToken` |
+| METHOD | POST                                  |
 
 **入参**
 
@@ -907,10 +919,10 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
 
 募资列表查询（状态查询）,不同的状态查询指定查询参数即可
 
-| 名称   | 值                                          |
-| ------ | ------------------------------------------- |
-| API    | `/ws_digist/fundraising/getFundraisingList` |
-| METHOD | POST                                        |
+| 名称   | 值                                         |
+| ------ | ------------------------------------------ |
+| API    | `ws_digist/fundraising/getFundraisingList` |
+| METHOD | POST                                       |
 
 **入参**
 
@@ -1042,10 +1054,10 @@ closed（过期关闭）
 
 单条数据详情查询，使用GET查询，get请求能浏览器缓存数据
 
-| 名称   | 值                                                |
-| ------ | ------------------------------------------------- |
-| API    | `/ws_digist/fundraising/getFundraisingDetail/:id` |
-| METHOD | GET                                               |
+| 名称   | 值                                               |
+| ------ | ------------------------------------------------ |
+| API    | `ws_digist/fundraising/getFundraisingDetail/:id` |
+| METHOD | GET                                              |
 
 **入参**
 
@@ -1416,146 +1428,148 @@ Post.findAll({
 
 ##5.数据字典
 
-| 名称                | 代码                      | 数据类型      | 长度  |
-| ------------------- | ------------------------- | ------------- | ----- |
-| id                  | id                        | varchar(50)   | 50    |
-| 钱包地址            | wallet_address            | varchar(60)   | 60    |
-| 登录密码            | password                  | varchar(1024) | 1,024 |
-| 支付密码            | pay_password              | varchar(1024) | 1,024 |
-| 姓名                | name                      | varchar(32)   | 32    |
-| 手机号码            | mobile                    | varchar(22)   | 22    |
-| 是否手机认证        | is_mobile_auth            | tinyint       |       |
-| 邮箱                | email                     | varchar(60)   | 60    |
-| 是否邮箱认证        | is_email_auth             | tinyint       |       |
-| 身份证              | idcard                    | varchar(20)   | 20    |
-| 是否身份证认证      | is_idcard_auth            | tinyint       |       |
-| 第二级认证信息      | second_auth_info          | json          |       |
-| 是否第二级认证      | is_second_auth            | tinyint       |       |
-| 第三级认证信息      | third_auth_info           | json          |       |
-| 是否第三级认证      | is_third_auth             | tinyint       |       |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| 用户id              | user_id                   | varchar(50)   | 50    |
-| 公司全称            | company_name              | varchar(120)  | 120   |
-| 公司简介            | company_description       | varchar(800)  | 800   |
-| 公司法人名称        | corporate                 | varchar(40)   | 40    |
-| 公司联系方式        | company_contact           | varchar(20)   | 20    |
-| 公司紧急联系方式    | company_emergency_contact | varchar(20)   | 20    |
-| 质押股票比例        | pledged_stock             | float         |       |
-| 项目名称            | project_name              | varchar(80)   | 80    |
-| 项目简介            | project_description       | varchar(800)  | 800   |
-| 项目文件            | project_file              | json          |       |
-| 项目估值            | project_val               | bigint        |       |
-| 货币                | currency                  | varchar(3)    | 3     |
-| 项目代币            | project_token             | varchar(20)   | 20    |
-| 筹集规模            | project_scale             | bigint        |       |
-| 筹集规模式          | project_mode              | varchar(20)   | 20    |
-| 最低认购数量        | minimum_subscription      | bigint        |       |
-| 投资年限            | investment_period         | varchar(8)    | 8     |
-| 股权收益权          | equity_income             | float         |       |
-| 提前退出窗口        | exit_early                | varchar(40)   | 40    |
-| 项目状态            | project_status            | varchar(20)   | 20    |
-| 关注度              | follow                    | int           |       |
-| 选票目标            | vote_target               | int           |       |
-| 已认购数量          | subscribed_quantity       | int           |       |
-| 已认购次数          | subscribed_frequency      | int           |       |
-| 选票                | vote                      | int           |       |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| user_id             | user_id                   | varchar(50)   | 50    |
-| 募资项目id          | fundraising_id            | varchar(50)   | 50    |
-| 项目名称            | project_name              | varchar(80)   | 80    |
-| 认购数量            | subscription_quantity     | bigint        |       |
-| 项目状态            | project_status            | varchar(22)   | 22    |
-| 买入次数            | buying_times              | int           |       |
-| 合约地址            | contract_address          | varchar(128)  | 128   |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| 项目id              | fundraising_id            | varchar(50)   | 50    |
-| 用户id              | user_id                   | varchar(50)   | 50    |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| 项目id              | project_id                | varchar(50)   | 50    |
-| 日志类型            | log_type                  | varchar(10)   | 10    |
-| 结果                | results                   | varchar(10)   | 10    |
-| 意见                | opinion                   | varchar(200)  | 200   |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| 用户id              | user_id                   | varchar(50)   | 50    |
-| 消息内容            | content                   | varchar(400)  | 400   |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| 募资项目id          | fundraising_id            | varchar(50)   | 50    |
-| 合约类型            | contract_type             | varchar(8)    | 8     |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| user_id             | user_id                   | varchar(50)   | 50    |
-| 钱包地址            | address                   | varchar(64)   | 64    |
-| 助记词              | mnemonic                  | varchar(512)  | 512   |
-| 私钥                | privateKey                | varchar(512)  | 512   |
-| keystore            | keystore                  | varchar(2048) | 2,048 |
-| 余额                | balance                   | bigint        |       |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
-| id                  | id                        | varchar(50)   | 50    |
-| useri_id            | useri_id                  | varchar(50)   | 50    |
-| 钱包id              | wallet_id                 | varchar(50)   | 50    |
-| 转账金额            | transfer_amount           | varchar(32)   | 32    |
-| block_hash          | block_hash                | varchar(128)  | 128   |
-| block_number        | block_number              | int           |       |
-| contract_address    | contract_address          | varchar(128)  | 128   |
-| cumulative_gas_used | cumulative_gas_used       | varchar(32)   | 32    |
-| fromaddress         | fromaddress               | varchar(128)  | 128   |
-| gas_used            | gas_used                  | varchar(32)   | 32    |
-| status              | status                    | varchar(12)   | 12    |
-| toaddress           | toaddress                 | varchar(128)  | 128   |
-| transaction_hash    | transaction_hash          | varchar(128)  | 128   |
-| transaction_index   | transaction_index         | int           |       |
-| 备注                | remark                    | varchar(400)  | 400   |
-| 创建时间            | created_time              | datetime(3)   | 3     |
-| 创建id              | created_id                | varchar(40)   | 40    |
-| 更新时间            | update_time               | datetime(3)   | 3     |
-| 更新id              | update_id                 | varchar(40)   | 40    |
-| 是否有效            | valid                     | tinyint(1)    | 1     |
 
- 
+
+| 名称                | 代码                      | 数据类型      | 注释                                                         |
+| ------------------- | ------------------------- | ------------- | ------------------------------------------------------------ |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 钱包地址            | wallet_address            | varchar(60)   | 钱包地址                                                     |
+| 登录密码            | password                  | varchar(1024) | 登录密码                                                     |
+| 支付密码            | pay_password              | varchar(1024) | 支付密码                                                     |
+| 姓名                | name                      | varchar(32)   | 姓名                                                         |
+| 手机号码            | mobile                    | varchar(22)   | 手机号码                                                     |
+| 是否手机认证        | is_mobile_auth            | tinyint       | 是否手机认证:1表示已认证、0表示未认证                        |
+| 邮箱                | email                     | varchar(60)   | 邮箱                                                         |
+| 是否邮箱认证        | is_email_auth             | tinyint       | 是否邮箱认证：1表示已认证、0表示未认证                       |
+| 身份证              | idcard                    | varchar(20)   | 身份证                                                       |
+| 是否身份证认证      | is_idcard_auth            | tinyint       | 是否身份证认证                                               |
+| 第二级认证信息      | second_auth_info          | json          | 第二级认证信息：1表示已认证、0表示未认证                     |
+| 是否第二级认证      | is_second_auth            | tinyint       | 1表示已认证、0表示未认证                                     |
+| 第三级认证信息      | third_auth_info           | json          | 第三级认证信息                                               |
+| 是否第三级认证      | is_third_auth             | tinyint       | 是否第三级认证：1表示已认证、0表示未认证                     |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 用户id              | user_id                   | varchar(50)   | 用户id                                                       |
+| 公司全称            | company_name              | varchar(120)  | 公司全称                                                     |
+| 公司简介            | company_description       | varchar(800)  | 公司简介                                                     |
+| 公司法人名称        | corporate                 | varchar(40)   | 公司法人名称                                                 |
+| 公司联系方式        | company_contact           | varchar(20)   | 公司联系方式                                                 |
+| 公司紧急联系方式    | company_emergency_contact | varchar(20)   | 公司紧急联系方式                                             |
+| 质押股票比例        | pledged_stock             | float         | 质押股票比例（百分比）                                       |
+| 项目名称            | project_name              | varchar(80)   | 项目名称                                                     |
+| 项目简介            | project_description       | varchar(800)  | 项目简介                                                     |
+| 项目文件            | project_file              | json          | 项目文件                                                     |
+| 项目估值            | project_val               | bigint        | 项目估值（货币单位：分）                                     |
+| 货币                | currency                  | varchar(3)    | 发行项目估值货币单位：CNY、USD……（参考世界各国货币名称符号大全） |
+| 项目代币            | project_token             | varchar(20)   | 项目代币：MANA/TRUE                                          |
+| 筹集规模            | project_scale             | bigint        | 筹集规模（货币单位：分）                                     |
+| 筹集规模式          | project_mode              | varchar(20)   | 筹集规模式:项目收益权、项目收益权                            |
+| 最低认购数量        | minimum_subscription      | bigint        | 最低认购数量                                                 |
+| 投资年限            | investment_period         | varchar(8)    | 投资年限:3Y（最后一位表示日期单位：Y、M、D，分别表示年、月、日） |
+| 股权收益权          | equity_income             | float         | 股权收益权（单位：百分比）                                   |
+| 提前退出窗口        | exit_early                | varchar(40)   | 提前退出窗口                                                 |
+| 项目状态            | project_status            | varchar(20)   | 项目状态:new、voting、raise、finished、fail、closed          |
+| 关注度              | follow                    | int           | 关注度                                                       |
+| 选票目标            | vote_target               | int           | 选票目标                                                     |
+| 已认购数量          | subscribed_quantity       | int           | 已认购数量                                                   |
+| 已认购次数          | subscribed_frequency      | int           | 已认购次数                                                   |
+| 选票                | vote                      | int           | 选票                                                         |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| user_id             | user_id                   | varchar(50)   | 用户id                                                       |
+| 募资项目id          | fundraising_id            | varchar(50)   | 项目id                                                       |
+| 项目名称            | project_name              | varchar(80)   | 项目名称                                                     |
+| 认购数量            | subscription_quantity     | bigint        | 认购数量                                                     |
+| 项目状态            | project_status            | varchar(22)   | 项目状态：已投资、已到期                                     |
+| 买入次数            | buying_times              | int           | 买入次数                                                     |
+| 合约地址            | contract_address          | varchar(128)  | 合约地址                                                     |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 项目id              | fundraising_id            | varchar(50)   | 项目id                                                       |
+| 用户id              | user_id                   | varchar(50)   | 用户id                                                       |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 项目id              | project_id                | varchar(50)   | 项目id                                                       |
+| 日志类型            | log_type                  | varchar(10)   | 日志类型：update、audit                                      |
+| 结果                | results                   | varchar(10)   | 审核结果:update、pass、fail                                  |
+| 意见                | opinion                   | varchar(200)  | 审核意见                                                     |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 用户id              | user_id                   | varchar(50)   | 用户id                                                       |
+| 消息内容            | content                   | varchar(400)  | 消息内容                                                     |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| 募资项目id          | fundraising_id            | varchar(50)   |                                                              |
+| 合约类型            | contract_type             | varchar(8)    | 合约类型：S3、DS                                             |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| user_id             | user_id                   | varchar(50)   | user_id                                                      |
+| 钱包地址            | address                   | varchar(64)   | 钱包地址                                                     |
+| 助记词              | mnemonic                  | varchar(512)  | 助记词（数据加密）                                           |
+| 私钥                | privateKey                | varchar(512)  | 私钥（数据加密）                                             |
+| keystore            | keystore                  | varchar(2048) | keystore（数据加密）                                         |
+| 余额                | balance                   | bigint        | 余额，仅做数据展示                                           |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+| id                  | id                        | varchar(50)   | 主键ID                                                       |
+| useri_id            | useri_id                  | varchar(50)   | useri_id                                                     |
+| 钱包id              | wallet_id                 | varchar(50)   | 钱包id                                                       |
+| 转账金额            | transfer_amount           | varchar(32)   | 转账金额                                                     |
+| block_hash          | block_hash                | varchar(128)  | block_hash                                                   |
+| block_number        | block_number              | int           | block_number                                                 |
+| contract_address    | contract_address          | varchar(128)  | contract_address                                             |
+| cumulative_gas_used | cumulative_gas_used       | varchar(32)   | cumulative_gas_used                                          |
+| fromaddress         | fromaddress               | varchar(128)  | fromaddress                                                  |
+| gas_used            | gas_used                  | varchar(32)   | gas_used                                                     |
+| status              | status                    | varchar(12)   | status                                                       |
+| toaddress           | toaddress                 | varchar(128)  | toaddress                                                    |
+| transaction_hash    | transaction_hash          | varchar(128)  | transaction_hash                                             |
+| transaction_index   | transaction_index         | int           | transaction_index                                            |
+| 备注                | remark                    | varchar(400)  | 备注                                                         |
+| 创建时间            | created_time              | datetime(3)   | 创建时间                                                     |
+| 创建id              | created_id                | varchar(40)   | 创建id                                                       |
+| 更新时间            | update_time               | datetime(3)   | 更新时间                                                     |
+| 更新id              | update_id                 | varchar(40)   | 更新id                                                       |
+| 是否有效            | valid                     | tinyint(1)    | 是否有效（1有效；0无效）                                     |
+
+
 
