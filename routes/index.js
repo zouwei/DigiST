@@ -1,23 +1,3 @@
-// const express = require("express");
-// // const bodyParser = require("body-parser");
-// // const cookieParser = require('cookie-parser');
-
-// var app = express();
-
-// /**
-//  * 这里只配置URL，不写具体的函数
-//  */
-
-// // app.use(bodyParser.json({type: "application/*+json"}));
-// // app.use(bodyParser.text());
-// // app.use(bodyParser.urlencoded({extended: false}));
-
-// app.use("/ws_service/user", require("./user"));
-
-// module.exports = exports = app;
-
-
-//import Koa from "koa";
 let koa = require("koa");
 let session = require("koa-session");         //注意这里的引入，一定要用improt from的姿势，不能用require的方法，不然会报错……
 //通过koa创建一个应用程序

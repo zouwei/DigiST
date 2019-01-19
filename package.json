@@ -28,6 +28,7 @@
     "keccak": "^2.0.0",
     "koa": "^2.6.2",
     "koa-body": "^4.0.6",
+    "koa-cors": "0.0.16",
     "koa-router": "^7.4.0",
     "koa-session": "^5.10.1",
     "koa-static": "^5.0.0",
