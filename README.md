@@ -926,6 +926,30 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
       }
   }
 }
+
+// 描述项目状态查询
+项目状态字段（project_status）：
+new（新建项目）、
+voting（投票中）、
+raise（投票完成，不投票表示审核完成）、
+finished（已发布）、
+fail（拒绝或者投票失败项目）、
+closed（过期关闭）
+
+查询新项目状态的投资项目，如下示例：
+{
+  where: {
+      "project_status": "new"			// 等价于查询project_status="new" 的数据
+  }
+}
+查询多个值状态值为fail、closed两个状态的数据记录
+{
+  where: {
+       "project_status": {
+          $in: ["fail","closed"]               // in查询，更多规则请参考查询表
+      }
+  }
+}
 ```
 
 **出参**

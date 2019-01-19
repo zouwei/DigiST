@@ -4,7 +4,7 @@
 module.exports = exports = function (sequelize, DataTypes) {
     const ProjectFollow = sequelize.define("ProjectFollow", {
         id: {type: DataTypes.STRING(50),"comment": "主键ID", primaryKey: true, allowNull: false},
-        project_id: {type: DataTypes.STRING(50),"comment": "项目id"},
+        fundraising_id: {type: DataTypes.STRING(50),"comment": "募资项目id"},
         user_id: {type: DataTypes.STRING(50),"comment": "用户id"},
         remark: {type: DataTypes.STRING(400),"comment": "备注"},
         created_time: {type: DataTypes.DATE,"comment": "创建时间"},

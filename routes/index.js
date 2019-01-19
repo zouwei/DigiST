@@ -23,10 +23,14 @@ let session = require("koa-session");         //注意这里的引入，一定�
 //通过koa创建一个应用程序
 let app = new koa();
 let koaBody = require("koa-body")
+// 跨域
+let cors = require('koa-cors');
+app.use(cors());
 
-let static = require("koa-static")
-let path = require("path")
-let views = require("koa-views")
+
+// let static = require("koa-static")
+// let path = require("path")
+// let views = require("koa-views")
 
 
 
