@@ -48,7 +48,7 @@ app.use(session({
 
 app.use(require("./user").routes())
 app.use(require("./fundraising").routes())
-
+app.use(require("./project").routes())
 
 
 

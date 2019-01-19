@@ -17,11 +17,10 @@ class ProjectService {
      * @param {JSON} args 
      * {
      *      "user_id":"",               // 用户id
-     *      "project_id":"",            // 项目id
+     *      "fundraising_id":"",            // 项目id
      *      "action":"ADD"              // 动作（ADD表示关注、DELETE表示解除关注）
      * }
      */
-
     static userFollowProject(args) {
 
         // 添加关注
@@ -30,7 +29,7 @@ class ProjectService {
             let entity = {
                 id: idgen.getID("DIGIST"),
                 user_id: args.user_id,                                      // user_id
-                project_id: args.project_id,                                // 项目id
+                fundraising_id: args.fundraising_id,                                // 项目id
                 remark: "",
                 created_time: new Date(),
                 created_id: args.user_id,
@@ -42,7 +41,10 @@ class ProjectService {
             // 添加关注项目
             return ProjectFollow.create(entity).then(data => {
                 // 返回
-                return Promise.resolve(entity);
+                return Promise.resolve({
+                    "id": entity.id,
+                    "remark": "项目关注成功"
+                });
             });
         }
         // 删除关注
@@ -51,7 +53,7 @@ class ProjectService {
             return ProjectFollow.destroy({
                 where: {
                     user_id: args.user_id,
-                    project_id: args.project_id
+                    fundraising_id: args.fundraising_id
                 }
             }).then(destroy => {
                 // 返回
@@ -81,7 +83,7 @@ class ProjectService {
 
         // 查询条件
         let p = {
-            where: args.where || {},                        //为空，获取全部，也可以自己添加条件
+            where: args.where || {},             //为空，获取全部，也可以自己添加条件
             offset: (args.pageIndex - 1) * args.pageSize,   //开始的数据索引，比如当page=2 时offset=10 ，而pagesize我们定义为10，则现在为索引为10，也就是从第11条开始返回数据条目
             order: args.order,                              // 排序
             limit: args.pageSize                            //每页限制返回的数据条数
@@ -98,7 +100,7 @@ class ProjectService {
 
 
     /**
-     * 【重要】投资项目
+     * 【重要】投资项目（这个接口已经迁移到user.js了）
      * @param {JSON} args 
      * {
      *      "user_id":"",                           // 用户id
