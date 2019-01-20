@@ -841,6 +841,7 @@ class UserService {
 
     /**
      * 合约转账
+     * 投资投资
      * @param {JSON} args 
      *   {
      *       "user_id":"44490100782A0F0C365C0000",	
@@ -920,6 +921,23 @@ class UserService {
             }
 
         }
+        // 更新募资项目
+        let updateFundraisingInfo = (fundraising_info) => {
+            // 需要更新的信息
+            fundraising_info.subscribed_quantity += parseFloat(args.number);
+            fundraising_info.subscribed_frequency += 1;
+            // 更新
+            return Fundraising.update({
+                "subscribed_quantity": fundraising_info.subscribed_quantity,
+                "subscribed_frequency": fundraising_info.subscribed_frequency,
+                "update_time": new Date()
+            }, {
+                    "where": { "id": fundraising_info.id }
+                }).then(() => {
+                    // 返回信息
+                    return Promise.resolve(fundraising_info);
+                }); 
+        }
 
 
         /*
@@ -993,7 +1011,10 @@ class UserService {
         }).then(() => {
             // 更新或者写入投资项目记录
             return updateInvestInfo(fundraising_info, invest_info);
-        }).then(data => {
+        }).then(() => {
+            // 更新募资项目信息
+            return updateFundraisingInfo(fundraising_info);
+        }).then(() => {
             // 返回交易记录
             return Promise.resolve({
                 "id": trade_info.id,
