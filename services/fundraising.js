@@ -48,9 +48,11 @@ class FundraisingService {
             project_name: args.project_name,                            // 项目名称
             project_description: args.project_description,              // 项目简介
             project_file: args.project_file,                            // 项目文件
-            project_val: -1,                                            // 项目估值（货币单位：分）
+            project_val: args.project_val,                                            // 项目估值（货币单位：元）
             currency: args.currency || "CNY",                           // 发行项目估值货币单位：CNY、USD……（参考世界各国货币名称符号大全）
             project_token: args.project_token || "MANA/TRU",            // 项目代币：MANA/TRUE
+            contract_type: args.contract_type || "S3",                  // 合约类型
+            license_type: args.license_type || "",                      // 牌照类型
             project_scale: args.project_scale || -1,                    // 筹集规模（货币单位：分）
             project_mode: args.project_mode || "项目收益权",             // 筹集规模式:项目收益权、
             minimum_subscription: args.minimum_subscription || 1000,    // 最低认购数量

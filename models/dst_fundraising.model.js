@@ -19,6 +19,8 @@ module.exports = exports = function (sequelize, DataTypes) {
         from_address: {type: DataTypes.STRING(80),"comment": "合约发起人地址"},
         contract_address: {type: DataTypes.STRING(80),"comment": "合约地址"},
         project_token: {type: DataTypes.STRING(20),"comment": "项目代币：MANA/TRUE"},
+        contract_type: {type: DataTypes.STRING(10),"comment": "合约类型"},
+        license_type: {type: DataTypes.STRING(20),"comment": "牌照类型"},
         project_scale: {type: DataTypes.FLOAT(12, 4),"comment": "筹集规模（货币单位：分）"},
         project_mode: {type: DataTypes.STRING(20),"comment": "筹集规模式:项目收益权、项目收益权"},
         minimum_subscription: {type: DataTypes.BIGINT(20),"comment": "最低认购数量"},
