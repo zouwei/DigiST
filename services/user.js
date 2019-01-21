@@ -185,9 +185,22 @@ class UserService {
             });
 
         };
+        // 验证用户是否存在
+        let verifyUser = (mobile) => {
+            return UserInfo.findOne({ where: { mobile: mobile, valid: 1 } }).then(userInfo => {
+                if (userInfo) {
+                    return Promise.reject(new Error("用户已经存在，不能重复注册"))
+                }
+                else
+                    return Promise.resolve(true);
+            });
+        }
 
-        // 用户注册流程
-        return verifyCode(args.verifyCode, args.mobile).then(() => {
+
+        return verifyUser(args.mobile).then(() => {
+            // 用户注册流程
+            return verifyCode(args.verifyCode, args.mobile)
+        }).then(() => {
             // 手机号码验证通过，注册（要先验证手机号码是否存在）
             let user_info = {
                 id: idgen.getID("DIGIST"),
@@ -940,7 +953,7 @@ class UserService {
                 }).then(() => {
                     // 返回信息
                     return Promise.resolve(fundraising_info);
-                }); 
+                });
         }
 
 
