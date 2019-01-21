@@ -819,9 +819,12 @@ token代币转账接口和以太币转账接口区分开来，步骤有很大的
       "pledged_stock":20,                                 // 质押股票比例（百分比）
       "project_description":"这是个很牛的项目，轻轻松进账几分钱。",       // 项目简介
       "project_file":"dee123454612353245134523423",    // 项目文件
-      "project_scale":0,                       // 筹集规模（货币单位：分）
+      "project_val":"10000000",					// 项目规模（单位：元）
+      "contract_type":"S3",					// 合约类型
+      "license_type":"S3",					// 牌照类型
+      "project_scale":0,                       // 筹集规模（货币单位：元）   
       "equity_income":10,                      // 股权收益权（单位：百分比） 
-      "project_token":"MANA/TRUE",             // 项目代币
+      "project_token":"MANA",             		// 项目代币
       "investment_period":"3Y",                // 投资年限:3Y（最后一位表示日期单位：Y、M、D，分别表示年、月、日）
       "minimum_subscription":1000,             // 最低认购数量
  }
