@@ -68,6 +68,8 @@ class UserService {
      * }
      */
     static sendVerificationCode(args) {
+        // 过渡方案，去掉验证手机号码的正确性
+        return Promise.resolve("短信验证码发送成功");
 
         // 验证用户
         let verifyUser = (verifyUser, mobile) => {
@@ -166,6 +168,8 @@ class UserService {
     static userRegister(args) {
         // 验证码验证
         let verifyCode = (verifyCode, mobile) => {
+            // 过渡方案，去掉验证手机号码的正确性
+            return Promise.resolve(true);
 
             // 获取验证码并且进行验证
             return RedisCache.get("MOBILE:" + mobile).then(data => {
