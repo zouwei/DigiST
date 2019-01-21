@@ -3,7 +3,6 @@
 const { expect, assert } = require("chai");
 const { suite, test, setup, teardown } = require("mocha");
 const { WalletWeb3 } = require('../services/wallet.web3');
-const { ConstractsWeb3 } = require('../services/constracts.web3');
 
 suite('Wallet unit testing', function () {
 
@@ -130,20 +129,21 @@ suite('Wallet unit testing', function () {
 
 
 
-    // 钱包：转账
-    test("test compile()", function () {
-        // 转账参数
+    // 钱包：创建智能合约
+    test("test createContract()", function () {
 
-
-        ConstractsWeb3.compile({
+        // 创建智能合约
+        WalletWeb3.createContract({
+            "privateKey": "0xe8999d39004a0642fd467423117407e3502fe0e6969d169b85c9a9750920e4df",
             "fromaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B"
         }).then(data => {
             // console.log("结果>>>", JSON.stringify(data));
-            assert.isObject(data, "转账成功");
+            assert.isString(data, "合约发布成功");
         }).catch(ex => {
             console.log("出现错误>>", ex.message);
-
         })
+
+
     });
 
 

@@ -164,27 +164,27 @@ suite('User unit  testing', function () {
     // });
 
 
-    // 测试：token代币转账
-    test("test sendSignedTransactionToConstracts()", function () {
+    // // 测试：token代币转账
+    // test("test sendSignedTransactionToConstracts()", function () {
 
-        let args = {
-            "user_id": "44490100782A0F0C365C0000",
-            "contract_address": "0x5821feC54CE3081F61ca863fb57C0602047EaE8c",               // 合约地址
-            "fromaddress": "0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d",                    // 购买人 
-            "toaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B",                      // 代币发起人地址
-            "number": "1"                                                               // 转账金额，必须是字符串类型的数字格式
-        }
+    //     let args = {
+    //         "user_id": "44490100782A0F0C365C0000",
+    //         "contract_address": "0x5821feC54CE3081F61ca863fb57C0602047EaE8c",               // 合约地址
+    //         "fromaddress": "0xa78928eAc28219C7d1B1563E9568AdA8BfC7677d",                    // 购买人 
+    //         "toaddress": "0x25090d091a19CAbD722F508776ffc2c44119C24B",                      // 代币发起人地址
+    //         "number": "1"                                                               // 转账金额，必须是字符串类型的数字格式
+    //     }
 
-        // 转成交易
-        return UserService.sendSignedTransactionToConstracts(args).then(data => {
-            console.log("转成交易成功>>", JSON.stringify(data))
-            // 结果 
-            assert.isObject(data, "转成交易成功");
-        }).catch(ex => {
-            console.log(ex)
-        });
-    });
-
+    //     // 转成交易
+    //     return UserService.sendSignedTransactionToConstracts(args).then(data => {
+    //         console.log("转成交易成功>>", JSON.stringify(data))
+    //         // 结果 
+    //         assert.isObject(data, "转成交易成功");
+    //     }).catch(ex => {
+    //         console.log(ex)
+    //     });
+    // });
+                   
 
 
 
